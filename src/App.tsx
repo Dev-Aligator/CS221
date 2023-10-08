@@ -59,7 +59,7 @@ function App() {
         <td>
           <a
             target="_blank"
-            href="https://colab.research.google.com/github/tensorflow/docs/blob/master/site/en/tutorials/images/transfer_learning.ipynb?force_kitty_mode=1&force_corgi_mode=1"
+            href="https://colab.research.google.com/drive/16MsoHOBBLYH1jMHSSmfgzox6jQlY8dqh"
           >
             <img src="https://www.tensorflow.org/images/colab_logo_32px.png" />
             Run in Google Colab
@@ -68,14 +68,14 @@ function App() {
         <td>
           <a
             target="_blank"
-            href="https://github.com/tensorflow/docs/blob/master/site/en/tutorials/images/transfer_learning.ipynb"
+            href="https://github.com/Dev-Aligator/CS221/blob/master/Solution/VLSP-Restaurant.ipynb"
           >
             <img src="https://www.tensorflow.org/images/GitHub-Mark-32px.png" />
             View source on GitHub
           </a>
         </td>
         <td>
-          <a href="https://storage.googleapis.com/tensorflow_docs/docs/site/en/tutorials/images/transfer_learning.ipynb">
+          <a href="https://drive.google.com/uc?export=download&id=16MsoHOBBLYH1jMHSSmfgzox6jQlY8dqh">
             <img src="https://www.tensorflow.org/images/download_logo_32px.png" />
             Download notebook
           </a>
@@ -83,112 +83,99 @@ function App() {
       </table>
 
       <p>
-        In this tutorial, you will learn how to classNameify images of cats and
-        dogs by using transfer learning from a pre-trained network.
+        In this tutorial, you will learn how to perform aspect category
+        sentiment analysis on{" "}
+        <a
+          href="https://drive.google.com/file/d/1yjZ0sDD2kAKOZK78MFqWJyaDcCSxnIqN/view?usp=drive_link"
+          target="_blank"
+        >
+          Vietnamese restaurant reviews datasets
+        </a>{" "}
+        using Logistic Regression with Average Gradient Descent.
       </p>
 
       <p>
-        A pre-trained model is a saved network that was previously trained on a
-        large dataset, typically on a large-scale image-classNameification task.
-        You either use the pretrained model as is or use transfer learning to
-        customize this model to a given task.
+        Aspect category sentiment analysis is the process of classifying text
+        data, such as customer reviews or social media comments, into specific
+        aspect categories (e.g., "FOOD#QUALITY," "SERVICE#GENERAL") and
+        determining the sentiment associated with each aspect (e.g., positive,
+        negative, neutral).
       </p>
 
       <p>
-        The intuition behind transfer learning for image classNameification is
-        that if a model is trained on a large and general enough dataset, this
-        model will effectively serve as a generic model of the visual world. You
-        can then take advantage of these learned feature maps without having to
-        start from scratch by training a large model on a large dataset.
+        Instead of employing separate models for each entity, we will implement
+        <strong> a single model</strong> capable of classifying sentiments
+        across all aspect categories efficiently."
       </p>
 
       <p>
-        In this notebook, you will try two ways to customize a pretrained model:
+        In this notebook, Our goal is to build a robust sentiment analysis model
+        for Vietnamese text data. We will walk through the following key steps:
       </p>
-
-      <ol>
-        <li>
-          <p>
-            Feature Extraction: Use the representations learned by a previous
-            network to extract meaningful features from new samples. You simply
-            add a new classNameifier, which will be trained from scratch, on top
-            of the pretrained model so that you can repurpose the feature maps
-            learned previously for the dataset.
-          </p>
-
-          <p>
-            You do not need to (re)train the entire model. The base
-            convolutional network already contains features that are generically
-            useful for classNameifying pictures. However, the final,
-            classNameification part of the pretrained model is specific to the
-            original classNameification task, and subsequently specific to the
-            set of classNamees on which the model was trained.
-          </p>
-        </li>
-        <li>
-          <p>
-            Fine-Tuning: Unfreeze a few of the top layers of a frozen model base
-            and jointly train both the newly-added classNameifier layers and the
-            last layers of the base model. This allows us to
-            &quot;fine-tune&quot; the higher-order feature representations in
-            the base model in order to make them more relevant for the specific
-            task.
-          </p>
-        </li>
-      </ol>
-
-      <p>You will follow the general machine learning workflow.</p>
 
       <ol>
         <li>Examine and understand the data</li>
         <li>
-          Build an input pipeline, in this case using Keras ImageDataGenerator
+          Feature Extraction: We use the TF-IDF (Term Frequency-Inverse Document
+          Frequency) vectorization technique to convert the preprocessed text
+          data into numerical features suitable for machine learning.
         </li>
         <li>
-          Compose the model
+          Model Training
           <ul>
-            <li>Load in the pretrained base model (and pretrained weights)</li>
-            <li>Stack the classNameification layers on top</li>
+            <li>
+              We employ a logistic regression classifier, designed to predict
+              sentiments for different aspect categories concurrently
+            </li>
+            <li>
+              This model has the capability to classify text into specific
+              aspect categories and assign sentiments such as negative, neutral,
+              or positive.
+            </li>
           </ul>
         </li>
-        <li>Train the model</li>
-        <li>Evaluate model</li>
+        <li>Model Evaluation</li>
       </ol>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          import matplotlib.pyplot as plt import numpy as np import os import
-          tensorflow as tf
-        </code>
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `import numpy as np
+import pandas as pd
+import tensorflow as tf
+import torch
+tf.get_logger().setLevel('ERROR')`,
+          }}
+        ></code>
       </pre>
+
       <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        2023-09-01 04&colon;18&colon;09.659328&colon; E
-        tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc&colon;9342]
-        Unable to register cuDNN factory&colon; Attempting to register factory
-        for plugin cuDNN when one has already been registered 2023-09-01
-        04&colon;18&colon;09.659378&colon; E
-        tensorflow/compiler/xla/stream_executor/cuda/cuda_fft.cc&colon;609]
-        Unable to register cuFFT factory&colon; Attempting to register factory
-        for plugin cuFFT when one has already been registered 2023-09-01
-        04&colon;18&colon;09.659411&colon; E
-        tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc&colon;1518]
-        Unable to register cuBLAS factory&colon; Attempting to register factory
-        for plugin cuBLAS when one has already been registered
-        WARNING&colon;tensorflow&colon;From
-        /tmpfs/src/tf_docs_env/lib/python3.9/site-packages/tensorflow/python/ops/distributions/distribution.py&colon;259&colon;
-        ReparameterizationType.__init__ (from
-        tensorflow.python.ops.distributions.distribution) is deprecated and will
-        be removed after 2019-01-01. Instructions for updating&colon; The
-        TensorFlow Distributions library has moved to TensorFlow Probability
-        (https&colon;//github.com/tensorflow/probability). You should update all
-        references to use `tfp.distributions` instead of `tf.distributions`.
-        WARNING&colon;tensorflow&colon;From
-        /tmpfs/src/tf_docs_env/lib/python3.9/site-packages/tensorflow/python/ops/distributions/bernoulli.py&colon;165&colon;
-        RegisterKL.__init__ (from
-        tensorflow.python.ops.distributions.kullback_leibler) is deprecated and
-        will be removed after 2019-01-01. Instructions for updating&colon; The
-        TensorFlow Distributions library has moved to TensorFlow Probability
-        (https&colon;//github.com/tensorflow/probability). You should update all
-        references to use `tfp.distributions` instead of `tf.distributions`.
+        2023-10-08 23:27:29.061168: I tensorflow/core/util/port.cc:111] oneDNN
+        custom operations are on. You may see slightly different numerical
+        results due to floating-point round-off errors from different
+        computation orders. To turn them off, set the environment variable
+        `TF_ENABLE_ONEDNN_OPTS=0`. 2023-10-08 23:27:29.120509: I
+        tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on
+        your machine, GPU will not be used. 2023-10-08 23:27:29.358877: E
+        tensorflow/compiler/xla/stream_executor/cuda/cuda_dnn.cc:9342] Unable to
+        register cuDNN factory: Attempting to register factory for plugin cuDNN
+        when one has already been registered 2023-10-08 23:27:29.358905: E
+        tensorflow/compiler/xla/stream_executor/cuda/cuda_fft.cc:609] Unable to
+        register cuFFT factory: Attempting to register factory for plugin cuFFT
+        when one has already been registered 2023-10-08 23:27:29.360397: E
+        tensorflow/compiler/xla/stream_executor/cuda/cuda_blas.cc:1518] Unable
+        to register cuBLAS factory: Attempting to register factory for plugin
+        cuBLAS when one has already been registered 2023-10-08 23:27:29.501851:
+        I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on
+        your machine, GPU will not be used. 2023-10-08 23:27:29.504355: I
+        tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow
+        binary is optimized to use available CPU instructions in
+        performance-critical operations. To enable the following instructions:
+        AVX2 AVX512F AVX512_VNNI FMA, in other operations, rebuild TensorFlow
+        with the appropriate compiler flags. 2023-10-08 23:27:30.487302: W
+        tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning:
+        Could not find TensorRT
       </pre>
 
       <h2 id="data_preprocessing" data-text="Data preprocessing">
@@ -201,38 +188,23 @@ function App() {
 
       <p>
         In this tutorial, you will use a dataset containing several thousand
-        images of cats and dogs. Download and extract a zip file containing the
-        images, then create a
-        <a href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">
-          <code translate="no" dir="ltr">
-            tf.data.Dataset
-          </code>
-        </a>
-        for training and validation using the
-        <a href="https://www.tensorflow.org/api_docs/python/tf/keras/utils/image_dataset_from_directory">
-          <code translate="no" dir="ltr">
-            tf.keras.utils.image_dataset_from_directory
-          </code>
-        </a>
-        utility. You can learn more about loading images in this
-        <a href="https://www.tensorflow.org/tutorials/load_data/images">
-          tutorial
-        </a>
-        .
+        reviews of restaurant in Vietnamese.{" "}
+        <a href="https://drive.google.com/uc?export=download&id=1yjZ0sDD2kAKOZK78MFqWJyaDcCSxnIqN">
+          Download
+        </a>{" "}
+        and extract a zip file containing the csv files, or use the original txt
+        files provided by VLSP2018 and follow this to convert it to csv .
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          _URL =
-          &#39;https://storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip&#39;
-          path_to_zip = tf.keras.utils.get_file(&#39;cats_and_dogs.zip&#39;,
-          origin=_URL, extract=True) PATH =
-          os.path.join(os.path.dirname(path_to_zip),
-          &#39;cats_and_dogs_filtered&#39;) train_dir = os.path.join(PATH,
-          &#39;train&#39;) validation_dir = os.path.join(PATH,
-          &#39;validation&#39;) BATCH_SIZE = 32 IMG_SIZE = (160, 160)
-          train_dataset = tf.keras.utils.image_dataset_from_directory(train_dir,
-          shuffle=True, batch_size=BATCH_SIZE, image_size=IMG_SIZE)
-        </code>
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `TRAIN_PATH = 'VLSP2018-SA-train-dev-test/csv/train.csv'
+VAL_PATH = 'VLSP2018-SA-train-dev-test/csv/dev.csv'
+TEST_PATH = 'VLSP2018-SA-train-dev-test/csv/test.csv'`,
+          }}
+        ></code>
       </pre>
       <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
         Downloading data from

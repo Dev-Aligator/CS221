@@ -161,9 +161,10 @@
       href="https://www.tensorflow.org/tutorials/images/transfer_learning?hl=vi"
     />
     <title>
-      Transfer learning and fine-tuning &nbsp;|&nbsp; TensorFlow Core
+      NLP for Sentiment Analysis with Logistic Regression 
     </title>
 
+    <link rel="icon" type="image/x-icon" href="src/assets/linear-regression.png">
     <meta
       property="og:title"
       content="Transfer learning and fine-tuning &nbsp;|&nbsp; TensorFlow Core"
@@ -247,9 +248,10 @@
                     track-metadata-eventDetail="nav"
                   >
                     <img
-                      src="https://www.gstatic.com/devrel-devsite/prod/v7101fe1ae309bf6f8b73931812f2304140fb851e33f225a68507501988007b93/tensorflow/images/lockup.svg"
+                      src="src/assets/UIT.png"
                       class="devsite-site-logo"
                       alt="TensorFlow"
+                      width="100px"
                     />
                   </a>
 
@@ -263,453 +265,7 @@
                   <div class="devsite-header-upper-tabs">
                     <devsite-tabs class="upper-tabs">
                       <nav class="devsite-tabs-wrapper" aria-label="Upper tabs">
-                        <tab>
-                          <a
-                            href="https://www.tensorflow.org/install"
-                            track-metadata-eventdetail="https://www.tensorflow.org/install"
-                            class="devsite-tabs-content gc-analytics-event"
-                            track-type="nav"
-                            track-metadata-position="nav - install"
-                            track-metadata-module="primary nav"
-                            data-category="Site-Wide Custom Events"
-                            data-label="Tab: Install"
-                            track-name="install"
-                          >
-                            Install
-                          </a>
-                        </tab>
-
-                        <tab dropdown active>
-                          <a
-                            href="https://www.tensorflow.org/learn"
-                            track-metadata-eventdetail="https://www.tensorflow.org/learn"
-                            class="devsite-tabs-content gc-analytics-event"
-                            track-type="nav"
-                            track-metadata-position="nav - learn"
-                            track-metadata-module="primary nav"
-                            aria-label="Learn, selected"
-                            data-category="Site-Wide Custom Events"
-                            data-label="Tab: Learn"
-                            track-name="learn"
-                          >
-                            Learn
-                          </a>
-
-                          <a
-                            href="#"
-                            role="button"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            aria-label="Dropdown menu for Learn"
-                            track-type="nav"
-                            track-metadata-eventdetail="https://www.tensorflow.org/learn"
-                            track-metadata-position="nav - learn"
-                            track-metadata-module="primary nav"
-                            data-category="Site-Wide Custom Events"
-                            data-label="Tab: Learn"
-                            track-name="learn"
-                            class="devsite-tabs-dropdown-toggle devsite-icon devsite-icon-arrow-drop-down"
-                          ></a>
-
-                          <div
-                            class="devsite-tabs-dropdown"
-                            aria-label="submenu"
-                            hidden
-                          >
-                            <div class="devsite-tabs-dropdown-content">
-                              <div
-                                class="devsite-tabs-dropdown-column tfo-menu-column-learn"
-                              >
-                                <ul class="devsite-tabs-dropdown-section">
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/learn"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/learn"
-                                      track-metadata-position="nav - learn"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        Introduction
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        New to TensorFlow?
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/overview"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/overview"
-                                      track-metadata-position="nav - learn"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        TensorFlow
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        The core open source ML library
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/js"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/js"
-                                      track-metadata-position="nav - learn"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        For JavaScript
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        TensorFlow.js for ML using JavaScript
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/lite"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/lite"
-                                      track-metadata-position="nav - learn"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        For Mobile & Edge
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        TensorFlow Lite for mobile and edge
-                                        devices
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/tfx"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/tfx"
-                                      track-metadata-position="nav - learn"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        For Production
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        TensorFlow Extended for end-to-end ML
-                                        components
-                                      </div>
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </tab>
-
-                        <tab dropdown>
-                          <a
-                            href="https://www.tensorflow.org/api"
-                            track-metadata-eventdetail="https://www.tensorflow.org/api"
-                            class="devsite-tabs-content gc-analytics-event"
-                            track-type="nav"
-                            track-metadata-position="nav - api"
-                            track-metadata-module="primary nav"
-                            data-category="Site-Wide Custom Events"
-                            data-label="Tab: API"
-                            track-name="api"
-                          >
-                            API
-                          </a>
-
-                          <a
-                            href="#"
-                            role="button"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            aria-label="Dropdown menu for API"
-                            track-type="nav"
-                            track-metadata-eventdetail="https://www.tensorflow.org/api"
-                            track-metadata-position="nav - api"
-                            track-metadata-module="primary nav"
-                            data-category="Site-Wide Custom Events"
-                            data-label="Tab: API"
-                            track-name="api"
-                            class="devsite-tabs-dropdown-toggle devsite-icon devsite-icon-arrow-drop-down"
-                          ></a>
-
-                          <div
-                            class="devsite-tabs-dropdown"
-                            aria-label="submenu"
-                            hidden
-                          >
-                            <div class="devsite-tabs-dropdown-content">
-                              <div class="devsite-tabs-dropdown-column">
-                                <ul class="devsite-tabs-dropdown-section">
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/api/stable"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/api/stable"
-                                      track-metadata-position="nav - api"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        TensorFlow (v2.14.0)
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/versions"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/versions"
-                                      track-metadata-position="nav - api"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        Versions…
-                                      </div>
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
-
-                              <div class="devsite-tabs-dropdown-column">
-                                <ul class="devsite-tabs-dropdown-section">
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://js.tensorflow.org/api/latest/"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://js.tensorflow.org/api/latest/"
-                                      track-metadata-position="nav - api"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        TensorFlow.js
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/lite/api_docs"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/lite/api_docs"
-                                      track-metadata-position="nav - api"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        TensorFlow Lite
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/tfx/api_docs"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/tfx/api_docs"
-                                      track-metadata-position="nav - api"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        TFX
-                                      </div>
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </tab>
-
-                        <tab dropdown>
-                          <a
-                            href="https://www.tensorflow.org/resources/models-datasets"
-                            track-metadata-eventdetail="https://www.tensorflow.org/resources/models-datasets"
-                            class="devsite-tabs-content gc-analytics-event"
-                            track-type="nav"
-                            track-metadata-position="nav - resources"
-                            track-metadata-module="primary nav"
-                            data-category="Site-Wide Custom Events"
-                            data-label="Tab: Resources"
-                            track-name="resources"
-                          >
-                            Resources
-                          </a>
-
-                          <a
-                            href="#"
-                            role="button"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            aria-label="Dropdown menu for Resources"
-                            track-type="nav"
-                            track-metadata-eventdetail="https://www.tensorflow.org/resources/models-datasets"
-                            track-metadata-position="nav - resources"
-                            track-metadata-module="primary nav"
-                            data-category="Site-Wide Custom Events"
-                            data-label="Tab: Resources"
-                            track-name="resources"
-                            class="devsite-tabs-dropdown-toggle devsite-icon devsite-icon-arrow-drop-down"
-                          ></a>
-
-                          <div
-                            class="devsite-tabs-dropdown"
-                            aria-label="submenu"
-                            hidden
-                          >
-                            <div class="devsite-tabs-dropdown-content">
-                              <div class="devsite-tabs-dropdown-column">
-                                <ul class="devsite-tabs-dropdown-section">
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/resources/models-datasets"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/resources/models-datasets"
-                                      track-metadata-position="nav - resources"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        Models & datasets
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        Pre-trained models and datasets built by
-                                        Google and the community
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/resources/tools"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/resources/tools"
-                                      track-metadata-position="nav - resources"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        Tools
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        Ecosystem of tools to help you use
-                                        TensorFlow
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/resources/libraries-extensions"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/resources/libraries-extensions"
-                                      track-metadata-position="nav - resources"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        Libraries & extensions
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        Libraries and extensions built on
-                                        TensorFlow
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/certificate"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/certificate"
-                                      track-metadata-position="nav - resources"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        TensorFlow Certificate program
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        Differentiate yourself by demonstrating
-                                        your ML proficiency
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/resources/learn-ml"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/resources/learn-ml"
-                                      track-metadata-position="nav - resources"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        Learn ML
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        Educational resources to learn the
-                                        fundamentals of ML with TensorFlow
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/responsible_ai"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/responsible_ai"
-                                      track-metadata-position="nav - resources"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        Responsible AI
-                                      </div>
-
-                                      <div class="devsite-nav-item-description">
-                                        Resources and tools to integrate
-                                        Responsible AI practices into your ML
-                                        workflow
-                                      </div>
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </tab>
+                        
 
                         <tab dropdown>
                           <a
@@ -723,7 +279,7 @@
                             data-label="Tab: Community"
                             track-name="community"
                           >
-                            Community
+                          Resources
                           </a>
 
                           <a
@@ -853,80 +409,6 @@
                             </div>
                           </div>
                         </tab>
-
-                        <tab dropdown>
-                          <a
-                            href="https://www.tensorflow.org/about"
-                            track-metadata-eventdetail="https://www.tensorflow.org/about"
-                            class="devsite-tabs-content gc-analytics-event"
-                            track-type="nav"
-                            track-metadata-position="nav - why tensorflow"
-                            track-metadata-module="primary nav"
-                            data-category="Site-Wide Custom Events"
-                            data-label="Tab: Why TensorFlow"
-                            track-name="why tensorflow"
-                          >
-                            Why TensorFlow
-                          </a>
-
-                          <a
-                            href="#"
-                            role="button"
-                            aria-haspopup="true"
-                            aria-expanded="false"
-                            aria-label="Dropdown menu for Why TensorFlow"
-                            track-type="nav"
-                            track-metadata-eventdetail="https://www.tensorflow.org/about"
-                            track-metadata-position="nav - why tensorflow"
-                            track-metadata-module="primary nav"
-                            data-category="Site-Wide Custom Events"
-                            data-label="Tab: Why TensorFlow"
-                            track-name="why tensorflow"
-                            class="devsite-tabs-dropdown-toggle devsite-icon devsite-icon-arrow-drop-down"
-                          ></a>
-
-                          <div
-                            class="devsite-tabs-dropdown"
-                            aria-label="submenu"
-                            hidden
-                          >
-                            <div class="devsite-tabs-dropdown-content">
-                              <div class="devsite-tabs-dropdown-column">
-                                <ul class="devsite-tabs-dropdown-section">
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/about"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/about"
-                                      track-metadata-position="nav - why tensorflow"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        About
-                                      </div>
-                                    </a>
-                                  </li>
-
-                                  <li class="devsite-nav-item">
-                                    <a
-                                      href="https://www.tensorflow.org/about/case-studies"
-                                      track-type="nav"
-                                      track-metadata-eventdetail="https://www.tensorflow.org/about/case-studies"
-                                      track-metadata-position="nav - why tensorflow"
-                                      track-metadata-module="tertiary nav"
-                                      tooltip
-                                    >
-                                      <div class="devsite-nav-item-title">
-                                        Case studies
-                                      </div>
-                                    </a>
-                                  </li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
-                        </tab>
                       </nav>
                     </devsite-tabs>
                   </div>
@@ -994,85 +476,18 @@
                       >
                     </li>
 
-                    <li role="presentation">
-                      <a role="menuitem" lang="id">Bahasa Indonesia</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="es_419"
-                        >Español – América Latina</a
-                      >
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="fr">Français</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="it">Italiano</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="pl">Polski</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="pt_br">Português – Brasil</a>
-                    </li>
-
+                    
                     <li role="presentation">
                       <a role="menuitem" lang="vi">Tiếng Việt</a>
                     </li>
 
-                    <li role="presentation">
-                      <a role="menuitem" lang="tr">Türkçe</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="ru">Русский</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="he">עברית</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="ar">العربيّة</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="fa">فارسی</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="hi">हिंदी</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="bn">বাংলা</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="th">ภาษาไทย</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="zh_cn">中文 – 简体</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="ja">日本語</a>
-                    </li>
-
-                    <li role="presentation">
-                      <a role="menuitem" lang="ko">한국어</a>
-                    </li>
+                   
                   </ul>
                 </devsite-language-selector>
 
                 <a
                   class="devsite-header-link devsite-top-button button gc-analytics-event"
-                  href="//github.com/tensorflow"
+                  href="//github.com/Dev-Aligator"
                   data-category="Site-Wide Custom Events"
                   data-label="Site header link"
                 >
@@ -1098,7 +513,7 @@
                   <ul class="devsite-breadcrumb-list">
                     <li class="devsite-breadcrumb-item">
                       <a
-                        href="https://www.tensorflow.org/overview"
+                        href="//web.stanford.edu/~jurafsky/slp3/5.pdf"
                         class="devsite-breadcrumb-link gc-analytics-event"
                         data-category="Site-Wide Custom Events"
                         data-label="Lower Header"
