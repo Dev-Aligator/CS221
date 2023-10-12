@@ -1,3 +1,4 @@
+import { bar_plot } from "./assets";
 function App() {
   return (
     <div className="devsite-article-body clearfix">
@@ -193,7 +194,14 @@ tf.get_logger().setLevel('ERROR')`,
           Download
         </a>{" "}
         and extract a zip file containing the csv files, or use the original txt
-        files provided by VLSP2018 and follow this to convert it to csv .
+        files provided by VLSP2018 and follow{" "}
+        <a
+          href="https://github.com/Dev-Aligator/CS221/blob/master/Solution/csvConverter.py"
+          target="_blank"
+        >
+          this
+        </a>{" "}
+        to convert it to csv .
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code
@@ -206,57 +214,127 @@ TEST_PATH = 'VLSP2018-SA-train-dev-test/csv/test.csv'`,
           }}
         ></code>
       </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Downloading data from
-        https&colon;//storage.googleapis.com/mledu-datasets/cats_and_dogs_filtered.zip
-        68606236/68606236 [==============================] - 0s 0us/step Found
-        2000 files belonging to 2 classNamees.
-      </pre>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          validation_dataset =
-          tf.keras.utils.image_dataset_from_directory(validation_dir,
-          shuffle=True, batch_size=BATCH_SIZE, image_size=IMG_SIZE)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Found 1000 files belonging to 2 classNamees.
-      </pre>
-
-      <p>Show the first nine images and labels from the training set:</p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          className_names = train_dataset.className_names
-          plt.figure(figsize=(10, 10)) for images, labels in
-          train_dataset.take(1): for i in range(9): ax = plt.subplot(3, 3, i +
-          1) plt.imshow(images[i].numpy().astype(&#34;uint8&#34;))
-          plt.title(className_names[labels[i]]) plt.axis(&#34;off&#34;)
-        </code>
-      </pre>
+      <h3 id="data_loading" data-text="Data loading">
+        Data loading
+      </h3>
       <p>
-        <img
-          src="/static/tutorials/images/transfer_learning_files/output_K5BeQyKThC_Y_0.png"
-          alt="png"
-        />
-      </p>
-
-      <p>
-        As the original dataset doesn&#39;t contain a test set, you will create
-        one. To do so, determine how many batches of data are available in the
-        validation set using
-        <a href="https://www.tensorflow.org/api_docs/python/tf/data/experimental/cardinality">
-          <code translate="no" dir="ltr">
-            tf.data.experimental.cardinality
-          </code>
-        </a>
-        , then move 20% of them to a test set.
+        To load and process the dataset, we first define a function to read CSV
+        files using the{" "}
+        <a href="https://pandas.pydata.org/docs/" target="_blank">
+          Pandas
+        </a>{" "}
+        library. The goal is to extract the review text and corresponding labels
+        for sentiment analysis. Here's how we do it:
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          val_batches = tf.data.experimental.cardinality(validation_dataset)
-          test_dataset = validation_dataset.take(val_batches // 5)
-          validation_dataset = validation_dataset.skip(val_batches // 5)
-        </code>
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `def read_csv(url):
+  df = pd.read_csv(url)    
+  X = df.pop('review')
+  y = df.replace({np.nan: 0, 
+                'negative': 1, 
+                'neutral': 2, 
+                'positive': 3}).astype(np.uint8)       
+  print('X.shape:', X.shape, 'y.shape:', y.shape)
+  return X, y`,
+          }}
+        ></code>
+      </pre>
+
+      <p>
+        Now that we have the function to read and process data, let's apply it
+        to the training, validation, and test datasets:
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `Xtrain, ytrain = read_csv(TRAIN_PATH)
+Xdev,   ydev   = read_csv(VAL_PATH)
+Xtest,  ytest  = read_csv(TEST_PATH)`,
+          }}
+        ></code>
+      </pre>
+      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
+        X.shape: (2961,) y.shape: (2961, 12) <br></br>
+        X.shape: (1290,) y.shape: (1290, 12) <br></br>
+        X.shape: (500,) y.shape: (500, 12)
+      </pre>
+
+      <p>
+        Show a bar plot showing the values for each aspects from the training
+        set:
+      </p>
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `fig, ax = plt.subplots(figsize=(12, 6))
+
+# Iterate through each category and plot the values
+for category_index, category_name in category_names.items():
+  ax.bar(category_name, ytrain_transposed[category_index], label=category_name)
+            
+# Set labels, legend, and title
+ax.set_xlabel('Categories')
+ax.set_ylabel('Values')
+ax.set_title('Bar Plot of Categories')
+ax.legend()
+
+# Rotate x-axis labels for better visibility
+plt.xticks(rotation=45)
+
+# Show the plot
+plt.tight_layout()
+plt.show()`,
+          }}
+        ></code>
+      </pre>
+      <p>
+        <img src={bar_plot} alt="png" />
+      </p>
+
+      <h3 id="data_processing" data-text="Data processing">
+        Data processing
+      </h3>
+      <p>
+        Looking at the review data, we find hashtags (#), emojis, different
+        letter cases, special characters, and Unicode characters. To prepare the
+        data properly, we will define a Text Cleaner class as below:
+      </p>
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `class TextCleanerBase(BaseEstimator, TransformerMixin):
+  def __init__(self):
+    super().__init__()
+        
+    # Create preprocessing function
+    self.normalize_unicode = partial(unicodedata.normalize, 'NFC')
+                    
+    def fit(self, X, y=None):
+      return self
+        
+    def transform(self, X):
+      if not isinstance(X, pd.Series):
+        X = pd.Series(X)
+        
+      return X.apply(str.lower) 
+              .apply(remove_emojis) 
+              .apply(self.normalize_unicode)
+        
+def remove_emojis(text):
+  return demoji.replace(text, '')`,
+          }}
+        ></code>
       </pre>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code translate="no" dir="ltr">
