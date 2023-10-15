@@ -1,4 +1,4 @@
-import { bar_plot } from "./assets";
+import { bar_plot, mo2ml } from "./assets";
 function App() {
   return (
     <div className="devsite-article-body clearfix">
@@ -179,8 +179,8 @@ tf.get_logger().setLevel('ERROR')`,
         Could not find TensorRT
       </pre>
 
-      <h2 id="data_preprocessing" data-text="Data preprocessing">
-        Data preprocessing
+      <h2 id="data_preparation" data-text="Data preparation">
+        Data preparation
       </h2>
 
       <h3 id="data_download" data-text="Data download">
@@ -266,6 +266,73 @@ Xtest,  ytest  = read_csv(TEST_PATH)`,
         X.shape: (500,) y.shape: (500, 12)
       </pre>
 
+      <h3 id="data_define_constants" data-text="Define Aspects and Sentiments">
+        Define Aspects and Sentiments
+      </h3>
+      <p>
+        Based on the VLSP dataset guidelines, we can determine that our analysis
+        will have 12 distinct aspects, each associated with 3 different
+        sentiments.
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `aspects = ['FOOD#PRICES',
+            'FOOD#QUALITY',
+            'FOOD#STYLE&OPTIONS',
+            'DRINKS#PRICES',
+            'DRINKS#QUALITY',
+            'DRINKS#STYLE&OPTIONS',
+            'RESTAURANT#PRICES',
+            'RESTAURANT#GENERAL',
+            'RESTAURANT#MISCELLANEOUS',
+            'SERVICE#GENERAL',
+            'AMBIENCE#GENERAL',
+            'LOCATION#GENERAL']
+ 
+sentiments = ['-', 'o', '+']    # Negative, Neutral, Positive`,
+          }}
+        ></code>
+      </pre>
+      <p>
+        Next, we'll define a function to convert multi-output data into binary
+        multi-label format.
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `def mo2ml(y):
+  newcols = [f'{a} {s}' for a in aspects for s in sentiments]
+
+  nrows, ncols = len(y), len(newcols)
+  ml = pd.DataFrame(np.zeros((nrows, ncols), dtype='bool'),
+                    columns=newcols)
+  
+  for i, a in enumerate(aspects):
+      for j in range(1, 4):
+          indices = y[a] == j
+          ml.iloc[indices, i * 3 + j - 1] = True
+
+  return ml`,
+          }}
+        ></code>
+      </pre>
+
+      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
+        FOOD#QUALITY = 2 ==={">"} FOOD#QUALITY - = 0 FOOD#QUALITY o = 0
+        FOOD#QUALITY + = 1
+      </pre>
+
+      <p>
+        <img src={mo2ml} alt="png" />
+      </p>
+
       <p>
         Show a bar plot showing the values for each aspects from the training
         set:
@@ -300,6 +367,43 @@ plt.show()`,
         <img src={bar_plot} alt="png" />
       </p>
 
+      <h2 id="feature_extraction" data-text="Feature extraction">
+        Feature extraction
+      </h2>
+      <p>
+        In this step, we convert our text data into term frequency features
+        using CountVectorizer from scikit-learn.
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code translate="no" dir="ltr">
+          from sklearn.feature_extraction.text import CountVectorizer <br></br>
+          <br></br>
+          vectorizer = CountVectorizer(ngram_range=(1, 3), min_df=2, max_df=0.9)
+        </code>
+      </pre>
+
+      <aside className="note">
+        <strong>Note:</strong>
+        <span>
+          <strong>`ngram_range`:</strong>
+          We define the range of word combinations (unigrams, bigrams, and
+          trigrams) to capture more context in the text.
+          <strong>`min_df=2`:</strong> specifies that a term must appeart in at
+          least 2 documents to be considered as a feature.
+          <strong>`max_df=0.9`:</strong> specifies that if a term must appeart
+          in more than 90% of the documents in the dataset are excluded.
+        </span>
+      </aside>
+
+      <p>Transformation</p>
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code translate="no" dir="ltr">
+          from sklearn.feature_extraction.text import CountVectorizer <br></br>
+          <br></br>
+          vectorizer = CountVectorizer(ngram_range=(1, 3), min_df=2, max_df=0.9)
+        </code>
+      </pre>
       <h3 id="data_processing" data-text="Data processing">
         Data processing
       </h3>
@@ -336,6 +440,11 @@ def remove_emojis(text):
           }}
         ></code>
       </pre>
+      <p>
+        You have the option to skip this step because its impact on test
+        accuracy is minimal. Alternatively, you may explore an advanced method
+        to enhance accuracy.
+      </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code translate="no" dir="ltr">
           print(&#39;Number of validation batches: %d&#39; %
