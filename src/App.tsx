@@ -60,7 +60,7 @@ function App() {
         <td>
           <a
             target="_blank"
-            href="https://colab.research.google.com/drive/16MsoHOBBLYH1jMHSSmfgzox6jQlY8dqh"
+            href="https://colab.research.google.com/drive/1p63AVpPfqWaOVv82l0dIPN2iHv8LeAB8"
           >
             <img src="https://www.tensorflow.org/images/colab_logo_32px.png" />
             Run in Google Colab
@@ -76,7 +76,7 @@ function App() {
           </a>
         </td>
         <td>
-          <a href="https://drive.google.com/uc?export=download&id=16MsoHOBBLYH1jMHSSmfgzox6jQlY8dqh">
+          <a href="https://drive.google.com/uc?export=download&id=1p63AVpPfqWaOVv82l0dIPN2iHv8LeAB8">
             <img src="https://www.tensorflow.org/images/download_logo_32px.png" />
             Download notebook
           </a>
@@ -146,6 +146,7 @@ function App() {
 import pandas as pd
 import tensorflow as tf
 import torch
+import matplotlib.pyplot as plt
 tf.get_logger().setLevel('ERROR')`,
           }}
         ></code>
@@ -330,9 +331,37 @@ sentiments = ['-', 'o', '+']    # Negative, Neutral, Positive`,
       </pre>
 
       <p>
+        Convert our data to binary multi-label format using the `mo2ml` function
+      </p>
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code translate="no" dir="ltr">
+          ytrain_ml = mo2ml(ytrain) <br></br>
+          ydev_ml = mo2ml(ydev) <br></br>
+          ytest_ml = mo2ml(ytest) <br></br>
+        </code>
+      </pre>
+
+      <p>
         <img src={mo2ml} alt="png" />
       </p>
 
+      <p>
+        We also need to ensure data is in the DataFrame format, converting it if
+        necessary.
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `def mo2df(y):
+  if isinstance(y, pd.DataFrame):
+      return y
+  return pd.DataFrame(y, columns=aspects)`,
+          }}
+        ></code>
+      </pre>
       <p>
         Show a bar plot showing the values for each aspects from the training
         set:
@@ -342,12 +371,13 @@ sentiments = ['-', 'o', '+']    # Negative, Neutral, Positive`,
           translate="no"
           dir="ltr"
           dangerouslySetInnerHTML={{
-            __html: `fig, ax = plt.subplots(figsize=(12, 6))
+            __html: `ytrain_transposed = ytrain.T
+fig, ax = plt.subplots(figsize=(12, 6))
 
 # Iterate through each category and plot the values
-for category_index, category_name in category_names.items():
-  ax.bar(category_name, ytrain_transposed[category_index], label=category_name)
-            
+for category_index, category_name in dict(enumerate(aspects)).items():
+    ax.bar(category_name, ytrain_transposed[category_index], label=category_name)
+
 # Set labels, legend, and title
 ax.set_xlabel('Categories')
 ax.set_ylabel('Values')
@@ -399,18 +429,424 @@ plt.show()`,
       <p>Transformation</p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code translate="no" dir="ltr">
-          from sklearn.feature_extraction.text import CountVectorizer <br></br>
-          <br></br>
-          vectorizer = CountVectorizer(ngram_range=(1, 3), min_df=2, max_df=0.9)
+          xtrain_baseCV = vectorizer.fit_transform(Xtrain) <br></br>
+          xdev_baseCV = vectorizer.transform(Xdev) <br></br>
+          xtest_baseCV = vectorizer.transform(Xtest) <br></br>
         </code>
       </pre>
+      <p>Let's see the result after the transformation step.</p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `sample_vector = xtrain_baseCV[0]
+
+# Retrieve terms and their indices from the vocabulary
+vocab_terms = {index: term for term, index in vectorizer.vocabulary_.items()}
+
+# For each non-zero entry in the sample vector, print the term and its frequency value
+for index in sample_vector.indices:
+    print(f"Term: {vocab_terms[index]}, CV value: {sample_vector[0, index]}")`,
+          }}
+        ></code>
+      </pre>
+
+      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
+        Term: ảnh, CV value: 1 <br></br>
+        Term: chụp, CV value: 3 <br></br>
+        Term: từ, CV value: 1 <br></br>
+        Term: hôm, CV value: 2 <br></br>
+        Term: qua, CV value: 2 <br></br>
+        Term: đi, CV value: 2 <br></br>
+        Term: chơi, CV value: 1 <br></br>
+        Term: với, CV value: 3 <br></br>
+        Term: gia, CV value: 1 <br></br>
+        Term: đình, CV value: 1 <br></br>
+        Term: và, CV value: 1 <br></br>
+        Term: nhà, CV value: 1 <br></br>
+        Term: họ, CV value: 1 <br></br>
+        Term: hàng, CV value: 1 <br></br>
+        Term: đang, CV value: 1 <br></br>
+        Term: sống, CV value: 1 <br></br>
+        Term: tại, CV value: 1 <br></br>
+        Term: sài, CV value: 1 <br></br>
+        Term: gòn, CV value: 1 <br></br>
+        Term: ăn, CV value: 4 <br></br>
+        Term: trưa, CV value: 1 <br></br>
+        Term: muộn, CV value: 1 <br></br>
+        Term: ai, CV value: 1 <br></br>
+        Term: cũng, CV value: 1 <br></br>
+        Term: đói, CV value: 2 <br></br>
+        Term: hết, CV value: 1 <br></br>
+        Term: nên, CV value: 2 <br></br>
+        Term: lúc, CV value: 1 <br></br>
+        Term: có, CV value: 1 <br></br>
+        Term: đồ, CV value: 2 <br></br>
+        Term: là, CV value: 1 <br></br>
+        Term: nhào, CV value: 1 <br></br>
+        Term: vô, CV value: 1 <br></br>
+        Term: liền, CV value: 1 <br></br>
+        Term: bởi, CV value: 1 <br></br>
+        Term: vậy, CV value: 1 <br></br>
+        Term: mới, CV value: 1 <br></br>
+        Term: quên, CV value: 1 <br></br>
+        Term: các, CV value: 1 <br></br>
+        Term: phần, CV value: 1 <br></br>
+        Term: gọi, CV value: 1 <br></br>
+        Term: thêm, CV value: 1 <br></br>
+        Term: nước, CV value: 1 <br></br>
+        Term: mắm, CV value: 1 <br></br>
+        Term: chỉ, CV value: 1 <br></br>
+        Term: món, CV value: 1 <br></br>
+        Term: chính, CV value: 1 <br></br>
+        Term: thôi, CV value: 1 <br></br>
+        Term: quá, CV value: 1 <br></br>
+        Term: không, CV value: 1 <br></br>
+        Term: biết, CV value: 1 <br></br>
+        Term: đánh, CV value: 1 <br></br>
+        Term: giá, CV value: 1 <br></br>
+        Term: kiểu, CV value: 1 <br></br>
+        Term: gì, CV value: 1 <br></br>
+        Term: luôn, CV value: 1 <br></br>
+        Term: chọn, CV value: 1 <br></br>
+        Term: cái, CV value: 1 <br></br>
+        Term: này, CV value: 1 <br></br>
+        Term: vì, CV value: 1 <br></br>
+        Term: thấy, CV value: 1 <br></br>
+        Term: nó, CV value: 1 <br></br>
+        Term: lạ, CV value: 1 <br></br>
+        Term: tui, CV value: 1 <br></br>
+        Term: ảnh chụp, CV value: 1 <br></br>
+        Term: hôm qua, CV value: 2 <br></br>
+        Term: qua đi, CV value: 2 <br></br>
+        Term: đi chơi, CV value: 1 <br></br>
+        Term: với gia, CV value: 1 <br></br>
+        Term: gia đình, CV value: 1 <br></br>
+        Term: đình và, CV value: 1 <br></br>
+        Term: tại sài, CV value: 1 <br></br>
+        Term: sài gòn, CV value: 1 <br></br>
+        Term: đi ăn, CV value: 1 <br></br>
+        Term: ăn trưa, CV value: 1 <br></br>
+        Term: ai cũng, CV value: 1 <br></br>
+        Term: hết nên, CV value: 1 <br></br>
+        Term: nên lúc, CV value: 1 <br></br>
+        Term: có đồ, CV value: 1 <br></br>
+        Term: đồ ăn, CV value: 2 <br></br>
+        Term: ăn là, CV value: 1 <br></br>
+        Term: vô ăn, CV value: 1 <br></br>
+        Term: ăn liền, CV value: 1 <br></br>
+        Term: vậy mới, CV value: 1 <br></br>
+        Term: quên chụp, CV value: 1 <br></br>
+        Term: gọi thêm, CV value: 1 <br></br>
+        Term: thêm với, CV value: 1 <br></br>
+        Term: với nước, CV value: 1 <br></br>
+        Term: nước mắm, CV value: 1 <br></br>
+        Term: món chính, CV value: 1 <br></br>
+        Term: chính thôi, CV value: 1 <br></br>
+        Term: đói quá, CV value: 1 <br></br>
+        Term: quá nên, CV value: 1 <br></br>
+        Term: nên không, CV value: 1 <br></br>
+        Term: không biết, CV value: 1 <br></br>
+        Term: đánh giá, CV value: 1 <br></br>
+        Term: giá đồ, CV value: 1 <br></br>
+        Term: ăn kiểu, CV value: 1 <br></br>
+        Term: kiểu gì, CV value: 1 <br></br>
+        Term: gì luôn, CV value: 1 <br></br>
+        Term: chọn cái, CV value: 1 <br></br>
+        Term: cái này, CV value: 1 <br></br>
+        Term: này vì, CV value: 1 <br></br>
+        Term: vì thấy, CV value: 1 <br></br>
+        Term: thấy nó, CV value: 1 <br></br>
+        Term: nó lạ, CV value: 1 <br></br>
+        Term: lạ với, CV value: 1 <br></br>
+        Term: với tui, CV value: 1 <br></br>
+        Term: hôm qua đi, CV value: 2 <br></br>
+        Term: qua đi chơi, CV value: 1 <br></br>
+        Term: với gia đình, CV value: 1 <br></br>
+        Term: gia đình và, CV value: 1 <br></br>
+        Term: tại sài gòn, CV value: 1 <br></br>
+        Term: qua đi ăn, CV value: 1 <br></br>
+        Term: có đồ ăn, CV value: 1 <br></br>
+        Term: đồ ăn là, CV value: 1 <br></br>
+        Term: với nước mắm, CV value: 1 <br></br>
+        Term: đói quá nên, CV value: 1 <br></br>
+        Term: quá nên không, CV value: 1 <br></br>
+        Term: nên không biết, CV value: 1 <br></br>
+        Term: giá đồ ăn, CV value: 1 <br></br>
+        Term: vì thấy nó, CV value: 1 <br></br>
+        Term: thấy nó lạ, CV value: 1 <br></br>
+      </pre>
+
+      <h2 id="model_training" data-text="Model training">
+        Model training
+      </h2>
+
+      <h3 id="evaluation_functions" data-text="Evaluation functions">
+        Evaluation functions
+      </h3>
+      <p>
+        First, we create evaluation functions to check how well our model is
+        doing. In this case, we'll make use of the 'classification_report' and
+        'f1 score'
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `from sklearn.metrics import f1_score, classification_report
+
+
+def quick_f1(y_true, y_pred):
+    y_pred = mo2ml(mo2df(y_pred))
+    return round(f1_score(y_true, y_pred, average='micro', zero_division=0), 4)
+
+def evaluate(model, X, y, average='micro'):
+    yb_true  = mo2ml(y)
+
+    yb_pred  = mo2df(model.predict(X))
+    yb_pred  = mo2ml(yb_pred)
+
+    return classification_report(yb_true, yb_pred, zero_division=0)`,
+          }}
+        ></code>
+      </pre>
+
+      <aside className="note">
+        <span>
+          <strong>`The F1 score`: </strong>
+          is the harmonic mean of precision and recall. <br></br>
+          <strong>`Classification Report`:</strong> is a summary of various
+          classification metrics for a machine learning model.
+        </span>
+      </aside>
+
+      <h3 id="setup_training" data-text="Set up & Training">
+        Set up & Training
+      </h3>
+      <p>
+        Import the necessary libraries, including 'SGDClassifier' for stochastic
+        gradient descent classification, `optuna` for hyperparameter
+        optimization, `TPESampler` for the Tree-structured Parzen Estimator
+        sampler, and `MultiOutputClassifier` (MOC) for multi-output
+        classification.
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code translate="no" dir="ltr">
+          from sklearn.linear_model import SGDClassifier
+          <br></br>
+          import optuna <br></br>
+          from optuna.samplers import TPESampler <br></br>
+          from sklearn.multioutput import MultiOutputClassifier as MOC <br></br>
+        </code>
+      </pre>
+
+      <p>
+        To simplify the challenging task of hyperparameter selection, we'll use
+        Optuna. Now, we define a callback function for Optuna that tracks and
+        saves the best model during the optimization process.
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `def callback(study, trial):
+  if study.best_trial.number == trial.number:
+    study.set_user_attr(key='best_model', value=trial.user_attrs['model'])`,
+          }}
+        ></code>
+      </pre>
+
+      <p>
+        Next we define the objective function for Optuna. It contains the
+        hyperparameters to optimize, including `class_weight` and `alpha`.
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `def logistic_objective(trial):
+    params = dict(
+        class_weight=trial.suggest_categorical('class_weight', ['balanced', None]),
+        alpha=trial.suggest_float('alpha', 1e-7, 1e-2, log=True),  # Add alpha for L2 regularization.
+        random_state=5,
+    )
+    # This function continues...`,
+          }}
+        ></code>
+      </pre>
+
+      <aside className="note">
+        <span>
+          The `log` parameter in the `suggest_float` function suggests
+          hyperparameters on a logarithmic scale.
+        </span>
+      </aside>
+
+      <p>
+        Now create an instance of the MultiOutputClassifier (MOC) and train it
+        using the SGDClassifier with the hyperparameters defined by the trial.
+        The best model is saved as a user attribute for later reference.{" "}
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code
+          translate="no"
+          dir="ltr"
+          dangerouslySetInnerHTML={{
+            __html: `    # logistic_objective continues here....
+
+    clf = MOC(SGDClassifier(loss='log_loss', max_iter=200, **params))  
+    clf.fit(xtrain_baseCV, ytrain)
+    trial.set_user_attr(key="model", value=clf)
+
+    y_pred = clf.predict(xdev_baseCV)
+    return quick_f1(ydev_ml, y_pred)`,
+          }}
+        ></code>
+      </pre>
+
+      <aside className="note">
+        <span>
+          The choice of loss='log_loss' indicates that the logistic loss
+          function (log loss) is used, making it equivalent to logistic
+          regression.
+        </span>
+      </aside>
+
+      <p>
+        Finally, set up the Optuna study with the specified sampler and
+        optimization direction and run the optimization process by the
+        `optimize`` method
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code translate="no" dir="ltr">
+          sampler = TPESampler(seed=221) <br></br>
+          logistic_study = optuna.create_study(sampler=sampler,
+          direction='maximize') <br></br>
+          logistic_study.optimize(logistic_objective, n_trials=50,
+          callbacks=[callback])
+        </code>
+      </pre>
+
+      <aside className="note">
+        <span>
+          <strong>TPESampler</strong> is one of the available samplers in
+          Optuna. It uses a Bayesian optimization strategy to explore the
+          hyperparameter search space efficiently. <br></br>
+          <strong>n_trials=50</strong> specifies that Optuna will perform 50
+          trials to optimize hyperparameters.
+        </span>
+      </aside>
+
+      <p>
+        We evaluate the best model on the test dataset, examine its performance
+        on training and development data, and review the selected
+        hyperparameters."
+      </p>
+
+      <pre className="prettyprint lang-python" translate="no" dir="ltr">
+        <code translate="no" dir="ltr">
+          clf = logistic_study.user_attrs['best_model'] <br></br>
+          <br></br>
+          print(evaluate(clf, xtest_baseCV, ytest)) <br></br>
+          <br></br>
+          print('train:', quick_f1(ytrain_ml, clf4.predict(xtrain_baseCV))){" "}
+          <br></br>
+          print('dev: ', quick_f1(ydev_ml , clf4.predict(xdev_baseCV))){" "}
+          <br></br>
+          print('test:', quick_f1(ytest_ml , clf4.predict(xtest_baseCV))){" "}
+          <br></br>
+          <br></br>
+          print(clf.estimators_[0].get_params()) <br></br>
+          print(logistic_study.best_params) <br></br>
+        </code>
+      </pre>
+
+      <pre
+        className="tfo-notebook-code-cell-output"
+        translate="no"
+        dir="ltr"
+        dangerouslySetInnerHTML={{
+          __html: `             precision    recall  f1-score   support
+
+          0       0.25      0.04      0.06        28
+          1       0.52      0.46      0.49       175
+          2       0.50      0.59      0.54       128
+          3       0.00      0.00      0.00        11
+          4       0.48      0.26      0.33        43
+          5       0.87      0.96      0.91       403
+          6       0.00      0.00      0.00        16
+          7       0.00      0.00      0.00        53
+          8       0.74      0.92      0.82       334
+          9       0.00      0.00      0.00         3
+         10       0.00      0.00      0.00        45
+         11       0.00      0.00      0.00        28
+         12       0.00      0.00      0.00         6
+         13       0.00      0.00      0.00        11
+         14       0.82      0.17      0.28        54
+         15       0.00      0.00      0.00         1
+         16       0.00      0.00      0.00         4
+         17       0.50      0.12      0.20        41
+         18       0.00      0.00      0.00         5
+         19       1.00      0.04      0.08        24
+         20       0.67      0.05      0.09        44
+         21       0.00      0.00      0.00        13
+         22       0.00      0.00      0.00         5
+         23       0.58      0.69      0.63       205
+         24       0.00      0.00      0.00         9
+         25       0.00      0.00      0.00        62
+         26       0.00      0.00      0.00        59
+         27       0.67      0.08      0.14        25
+         28       1.00      0.05      0.09        22
+         29       0.65      0.55      0.59       128
+         30       0.00      0.00      0.00        26
+         31       0.50      0.02      0.04        48
+         32       0.88      0.70      0.78       181
+         33       1.00      0.12      0.22        16
+         34       0.81      0.21      0.34        99
+         35       0.36      0.08      0.13        64
+
+  micro avg       0.71      0.52      0.60      2419
+  macro avg       0.36      0.17      0.19      2419
+weighted avg       0.60      0.52      0.51      2419
+samples avg       0.71      0.53      0.59      2419
+
+train: 0.9958
+dev:   0.6613
+test: 0.5821
+{'alpha': 0.0004717578720216505, 'average': False, 'class_weight': None, 'early_stopping': False, 'epsilon': 0.1, 'eta0': 0.0, 'fit_intercept': True, 'l1_ratio': 0.15, 'learning_rate': 'optimal', 'loss': 'log_loss', 'max_iter': 200, 'n_iter_no_change': 5, 'n_jobs': None, 'penalty': 'l2', 'power_t': 0.5, 'random_state': 5, 'shuffle': True, 'tol': 0.001, 'validation_fraction': 0.1, 'verbose': 0, 'warm_start': False}
+{'class_weight': None, 'alpha': 0.0004717578720216505}
+  `,
+        }}
+      ></pre>
+      <p>
+        Here, we have successfully constructed a Logistic Regression Model for
+        sentiment classification across various aspect categories. However as
+        you can see from the evaluation score - <strong>0.5821 </strong>for the
+        test set, indicates room for improvement.{" "}
+      </p>
+
+      <h2 id="Optimization" data-text="Optimization">
+        Optimization techniques
+      </h2>
+
       <h3 id="data_processing" data-text="Data processing">
         Data processing
       </h3>
       <p>
-        Looking at the review data, we find hashtags (#), emojis, different
-        letter cases, special characters, and Unicode characters. To prepare the
-        data properly, we will define a Text Cleaner class as below:
+        Looking at the review data, we find emojis, different letter cases,
+        special characters. To prepare the data properly, we will define a Text
+        Cleaner class as below:
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code
@@ -442,1224 +878,173 @@ def remove_emojis(text):
       </pre>
       <p>
         You have the option to skip this step because its impact on test
-        accuracy is minimal. Alternatively, you may explore an advanced method
-        to enhance accuracy.
+        accuracy is minimal. Alternatively, you may explore another method to
+        enhance accuracy.
       </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          print(&#39;Number of validation batches: %d&#39; %
-          tf.data.experimental.cardinality(validation_dataset))
-          print(&#39;Number of test batches: %d&#39; %
-          tf.data.experimental.cardinality(test_dataset))
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Number of validation batches&colon; 26 Number of test batches&colon; 6
-      </pre>
 
-      <h3
-        id="configure_the_dataset_for_performance"
-        data-text="Configure the dataset for performance"
-      >
-        Configure the dataset for performance
+      <h3 id="tf_idf" data-text="Use TF-IDF instead of TF">
+        Use TF-IDF instead of TF
       </h3>
-
       <p>
-        Use buffered prefetching to load images from disk without having I/O
-        become blocking. To learn more about this method see the
-        <a href="https://www.tensorflow.org/guide/data_performance">
-          data performance
-        </a>
-        guide.
+        Switching to TF-IDF from TF improves our model by assigning more weight
+        to relevant words and reducing feature complexity, leading to more
+        accurate and versatile sentiment classification.
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code translate="no" dir="ltr">
-          AUTOTUNE = tf.data.AUTOTUNE train_dataset =
-          train_dataset.prefetch(buffer_size=AUTOTUNE) validation_dataset =
-          validation_dataset.prefetch(buffer_size=AUTOTUNE) test_dataset =
-          test_dataset.prefetch(buffer_size=AUTOTUNE)
-        </code>
-      </pre>
-      <h3 id="use_data_augmentation" data-text="Use data augmentation">
-        Use data augmentation
-      </h3>
-
-      <p>
-        When you don&#39;t have a large image dataset, it&#39;s a good practice
-        to artificially introduce sample diversity by applying random, yet
-        realistic, transformations to the training images, such as rotation and
-        horizontal flipping. This helps expose the model to different aspects of
-        the training data and reduce
-        <a href="https://www.tensorflow.org/tutorials/keras/overfit_and_underfit">
-          overfitting
-        </a>
-        . You can learn more about data augmentation in this
-        <a href="https://www.tensorflow.org/tutorials/images/data_augmentation">
-          tutorial
-        </a>
-        .
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          data_augmentation = tf.keras.Sequential([
-          tf.keras.layers.RandomFlip(&#39;horizontal&#39;),
-          tf.keras.layers.RandomRotation(0.2), ])
-        </code>
-      </pre>
-      <aside className="note">
-        <strong>Note:</strong>
-        <span>
-          These layers are active only during training, when you call
-          <a href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit">
-            <code translate="no" dir="ltr">
-              Model.fit
-            </code>
-          </a>
-          . They are inactive when the model is used in inference mode in
-          <a href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#evaluate">
-            <code translate="no" dir="ltr">
-              Model.evaluate
-            </code>
-          </a>
-          ,
-          <a href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#predict">
-            <code translate="no" dir="ltr">
-              Model.predict
-            </code>
-          </a>
-          , or
-          <a href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#call">
-            <code translate="no" dir="ltr">
-              Model.call
-            </code>
-          </a>
-          .
-        </span>
-      </aside>
-      <p>
-        Let&#39;s repeatedly apply these layers to the same image and see the
-        result.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          for image, _ in train_dataset.take(1): plt.figure(figsize=(10, 10))
-          first_image = image[0] for i in range(9): ax = plt.subplot(3, 3, i +
-          1) augmented_image = data_augmentation(tf.expand_dims(first_image, 0))
-          plt.imshow(augmented_image[0] / 255) plt.axis(&#39;off&#39;)
-        </code>
-      </pre>
-      <p>
-        <img
-          src="/static/tutorials/images/transfer_learning_files/output_aQullOUHkm67_0.png"
-          alt="png"
-        />
-      </p>
-
-      <h3 id="rescale_pixel_values" data-text="Rescale pixel values">
-        Rescale pixel values
-      </h3>
-
-      <p>
-        In a moment, you will download
-        <a href="https://www.tensorflow.org/api_docs/python/tf/keras/applications/mobilenet_v2/MobileNetV2">
-          <code translate="no" dir="ltr">
-            tf.keras.applications.MobileNetV2
-          </code>
-        </a>
-        for use as your base model. This model expects pixel values in
-        <code translate="no" dir="ltr">
-          [-1, 1]
-        </code>
-        , but at this point, the pixel values in your images are in
-        <code translate="no" dir="ltr">
-          [0, 255]
-        </code>
-        . To rescale them, use the preprocessing method included with the model.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          preprocess_input = tf.keras.applications.mobilenet_v2.preprocess_input
-        </code>
-      </pre>
-      <aside className="note">
-        <strong>Note:</strong>
-        <span>
-          Alternatively, you could rescale pixel values from
-          <code translate="no" dir="ltr">
-            [0, 255]
-          </code>{" "}
-          to
-          <code translate="no" dir="ltr">
-            [-1, 1]
-          </code>{" "}
-          using
-          <code translate="no" dir="ltr">
-            tf.keras.layers.Rescaling
-          </code>
-          .
-        </span>
-      </aside>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          rescale = tf.keras.layers.Rescaling(1./127.5, offset=-1)
-        </code>
-      </pre>
-      <aside className="note">
-        <strong>Note:</strong>
-        <span>
-          If using other
-          <a href="https://www.tensorflow.org/api_docs/python/tf/keras/applications">
-            <code translate="no" dir="ltr">
-              tf.keras.applications
-            </code>
-          </a>
-          , be sure to check the API doc to determine if they expect pixels in{" "}
-          <code translate="no" dir="ltr">
-            [-1, 1]
-          </code>{" "}
-          or
-          <code translate="no" dir="ltr">
-            [0, 1]
-          </code>
-          , or use the included
-          <code translate="no" dir="ltr">
-            preprocess_input
-          </code>
-          function.
-        </span>
-      </aside>
-      <h2
-        id="create_the_base_model_from_the_pre-trained_convnets"
-        data-text="Create the base model from the pre-trained convnets"
-      >
-        Create the base model from the pre-trained convnets
-      </h2>
-
-      <p>
-        You will create the base model from the
-        <strong>MobileNet V2</strong> model developed at Google. This is
-        pre-trained on the ImageNet dataset, a large dataset consisting of 1.4M
-        images and 1000 classNamees. ImageNet is a research training dataset
-        with a wide variety of categories like{" "}
-        <code translate="no" dir="ltr">
-          jackfruit
-        </code>{" "}
-        and
-        <code translate="no" dir="ltr">
-          syringe
-        </code>
-        . This base of knowledge will help us classNameify cats and dogs from
-        our specific dataset.
-      </p>
-
-      <p>
-        First, you need to pick which layer of MobileNet V2 you will use for
-        feature extraction. The very last classNameification layer (on
-        &quot;top&quot;, as most diagrams of machine learning models go from
-        bottom to top) is not very useful. Instead, you will follow the common
-        practice to depend on the very last layer before the flatten operation.
-        This layer is called the &quot;bottleneck layer&quot;. The bottleneck
-        layer features retain more generality as compared to the final/top
-        layer.
-      </p>
-
-      <p>
-        First, instantiate a MobileNet V2 model pre-loaded with weights trained
-        on ImageNet. By specifying the
-        <strong>include_top=False</strong> argument, you load a network that
-        doesn&#39;t include the classNameification layers at the top, which is
-        ideal for feature extraction.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          # Create the base model from the pre-trained model MobileNet V2
-          IMG_SHAPE = IMG_SIZE + (3,) base_model =
-          tf.keras.applications.MobileNetV2(input_shape=IMG_SHAPE,
-          include_top=False, weights=&#39;imagenet&#39;)
+          from sklearn.feature_extraction.text import TfidfVectorizer <br></br>
+          <br></br>
+          vectorizer = TfidfVectorizer(ngram_range=(1, 3), min_df=2, max_df=0.9)
         </code>
       </pre>
       <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Downloading data from
-        https&colon;//storage.googleapis.com/tensorflow/keras-applications/mobilenet_v2/mobilenet_v2_weights_tf_dim_ordering_tf_kernels_1.0_160_no_top.h5
-        9406464/9406464 [==============================] - 0s 0us/step
+        Term: thấy nó lạ, TF-IDF value: 0.11312900190971689 <br></br>
+        Term: vì thấy nó, TF-IDF value: 0.11312900190971689 <br></br>
+        Term: giá đồ ăn, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: nên không biết, TF-IDF value: 0.09587705653497454 <br></br>
+        Term: quá nên không, TF-IDF value: 0.10580928860260153 <br></br>
+        Term: đói quá nên, TF-IDF value: 0.11312900190971689 <br></br>
+        Term: với nước mắm, TF-IDF value: 0.09587705653497454 <br></br>
+        Term: đồ ăn là, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: có đồ ăn, TF-IDF value: 0.10098791670329482 <br></br>
+        Term: qua đi ăn, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: tại sài gòn, TF-IDF value: 0.1031967698420899 <br></br>
+        Term: gia đình và, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: với gia đình, TF-IDF value: 0.1031967698420899 <br></br>
+        Term: qua đi chơi, TF-IDF value: 0.11312900190971689 <br></br>
+        Term: hôm qua đi, TF-IDF value: 0.21161857720520305 <br></br>
+        Term: với tui, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: lạ với, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: nó lạ, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: thấy nó, TF-IDF value: 0.08914228901485786 <br></br>
+        Term: vì thấy, TF-IDF value: 0.10098791670329482 <br></br>
+        Term: này vì, TF-IDF value: 0.09451133962697372 <br></br>
+        Term: cái này, TF-IDF value: 0.08524570132764589 <br></br>
+        Term: chọn cái, TF-IDF value: 0.11312900190971689 <br></br>
+        Term: gì luôn, TF-IDF value: 0.1031967698420899 <br></br>
+        Term: kiểu gì, TF-IDF value: 0.1031967698420899 <br></br>
+        Term: ăn kiểu, TF-IDF value: 0.1031967698420899 <br></br>
+        Term: giá đồ, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: đánh giá, TF-IDF value: 0.08667981541538645 <br></br>
+        Term: không biết, TF-IDF value: 0.0783413557106385 <br></br>
+        Term: nên không, TF-IDF value: 0.07712971751245862 <br></br>
+        Term: quá nên, TF-IDF value: 0.07876912425132479 <br></br>
+        Term: đói quá, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: chính thôi, TF-IDF value: 0.11312900190971689 <br></br>
+        Term: món chính, TF-IDF value: 0.10098791670329482 <br></br>
+        Term: nước mắm, TF-IDF value: 0.06218377264488158 <br></br>
+        Term: với nước, TF-IDF value: 0.07497629648127954 <br></br>
+        Term: thêm với, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: gọi thêm, TF-IDF value: 0.06883689218369779 <br></br>
+        Term: quên chụp, TF-IDF value: 0.10098791670329482 <br></br>
+        Term: vậy mới, TF-IDF value: 0.10580928860260153 <br></br>
+        Term: ăn liền, TF-IDF value: 0.09326453777446292 <br></br>
+        Term: vô ăn, TF-IDF value: 0.10098791670329482 <br></br>
+        Term: ăn là, TF-IDF value: 0.07068839059401029 <br></br>
+        Term: đồ ăn, TF-IDF value: 0.0965672943105496 <br></br>
+        Term: có đồ, TF-IDF value: 0.0900670732269526 <br></br>
+        Term: nên lúc, TF-IDF value: 0.09211759125252429 <br></br>
+        Term: hết nên, TF-IDF value: 0.10580928860260153 <br></br>
+        Term: ai cũng, TF-IDF value: 0.08827358777826548 <br></br>
+        Term: ăn trưa, TF-IDF value: 0.08914228901485786 <br></br>
+        Term: đi ăn, TF-IDF value: 0.05462049797329023 <br></br>
+        Term: sài gòn, TF-IDF value: 0.0740099180978919 <br></br>
+        Term: tại sài, TF-IDF value: 0.10098791670329482 <br></br>
+        Term: đình và, TF-IDF value: 0.10900675315011185 <br></br>
+        Term: gia đình, TF-IDF value: 0.07752232239881397 <br></br>
+        Term: với gia, TF-IDF value: 0.09451133962697372 <br></br>
+        Term: đi chơi, TF-IDF value: 0.10098791670329482 <br></br>
+        Term: qua đi, TF-IDF value: 0.21161857720520305 <br></br>
+        Term: hôm qua, TF-IDF value: 0.19477357306813592 <br></br>
+        Term: ảnh chụp, TF-IDF value: 0.11312900190971689 <br></br>
+        Term: tui, TF-IDF value: 0.07432485785130365 <br></br>
+        Term: lạ, TF-IDF value: 0.05273732207956627 <br></br>
+        Term: nó, TF-IDF value: 0.059123430502132986 <br></br>
+        Term: thấy, TF-IDF value: 0.03976376470270375 <br></br>
+        Term: vì, TF-IDF value: 0.046441557269232644 <br></br>
+        Term: này, TF-IDF value: 0.032387076442000604 <br></br>
+        Term: cái, TF-IDF value: 0.043162444740421864 <br></br>
+        Term: chọn, TF-IDF value: 0.05934559281197689 <br></br>
+        Term: luôn, TF-IDF value: 0.03384005713147784 <br></br>
+        Term: gì, TF-IDF value: 0.05132675636515987 <br></br>
+        Term: kiểu, TF-IDF value: 0.0551953846640886 <br></br>
+        Term: giá, TF-IDF value: 0.03109910894856448 <br></br>
+        Term: đánh, TF-IDF value: 0.08112345256804085 <br></br>
+        Term: biết, TF-IDF value: 0.05470122597244219 <br></br>
+        Term: không, TF-IDF value: 0.03130325417170216 <br></br>
+        Term: quá, TF-IDF value: 0.03976376470270375 <br></br>
+        Term: thôi, TF-IDF value: 0.04551677305713792 <br></br>
+        Term: chính, TF-IDF value: 0.07198018206573666 <br></br>
+        Term: món, TF-IDF value: 0.03259325527896704 <br></br>
+        Term: chỉ, TF-IDF value: 0.04211605429394878 <br></br>
+        Term: mắm, TF-IDF value: 0.05211571793048267 <br></br>
+        Term: nước, TF-IDF value: 0.030760123244311387 <br></br>
+        Term: thêm, TF-IDF value: 0.041046941651318676 <br></br>
+        Term: gọi, TF-IDF value: 0.044252212890359015 <br></br>
+        Term: phần, TF-IDF value: 0.041203889353430494 <br></br>
+        Term: các, TF-IDF value: 0.045013943150734356 <br></br>
+        Term: quên, TF-IDF value: 0.0722531271172703 <br></br>
+        Term: mới, TF-IDF value: 0.04577496350093349 <br></br>
+        Term: vậy, TF-IDF value: 0.05353560950395495 <br></br>
+        Term: bởi, TF-IDF value: 0.08594482446734754 <br></br>
+        Term: liền, TF-IDF value: 0.07565876746111884 <br></br>
+        Term: vô, TF-IDF value: 0.061258988432786855 <br></br>
+        Term: nhào, TF-IDF value: 0.11312900190971689 <br></br>
+        Term: là, TF-IDF value: 0.024703556181286373 <br></br>
+        Term: đồ, TF-IDF value: 0.08668904131683706 <br></br>
+        Term: có, TF-IDF value: 0.025451157146521262 <br></br>
+        Term: lúc, TF-IDF value: 0.05171580782757912 <br></br>
+        Term: nên, TF-IDF value: 0.06553473311560175 <br></br>
+        Term: hết, TF-IDF value: 0.041717995865396706 <br></br>
+        Term: đói, TF-IDF value: 0.15504464479762795 <br></br>
+        Term: cũng, TF-IDF value: 0.028406256377782924 <br></br>
+        Term: ai, TF-IDF value: 0.056603061139257685 <br></br>
+        Term: muộn, TF-IDF value: 0.09451133962697372 <br></br>
+        Term: trưa, TF-IDF value: 0.06521165909550117 <br></br>
+        Term: ăn, TF-IDF value: 0.07683878126855012 <br></br>
+        Term: gòn, TF-IDF value: 0.0740099180978919 <br></br>
+        Term: sài, TF-IDF value: 0.07340007363920893 <br></br>
+        Term: tại, TF-IDF value: 0.06088022148275457 <br></br>
+        Term: sống, TF-IDF value: 0.07464687549171974 <br></br>
+        Term: đang, TF-IDF value: 0.0677905017372247 <br></br>
+        Term: hàng, TF-IDF value: 0.05553455273377999 <br></br>
+        Term: họ, TF-IDF value: 0.08594482446734754 <br></br>
+        Term: nhà, TF-IDF value: 0.053167229783046555 <br></br>
+        Term: và, TF-IDF value: 0.02993178719061098 <br></br>
+        Term: đình, TF-IDF value: 0.07432485785130365 <br></br>
+        Term: gia, TF-IDF value: 0.057657858263559986 <br></br>
+        Term: với, TF-IDF value: 0.10543082488081452 <br></br>
+        Term: chơi, TF-IDF value: 0.08062062266163728 <br></br>
+        Term: đi, TF-IDF value: 0.07913067133800834 <br></br>
+        Term: qua, TF-IDF value: 0.11914250776873991 <br></br>
+        Term: hôm, TF-IDF value: 0.1269356831431639 <br></br>
+        Term: từ, TF-IDF value: 0.04777546687904782 <br></br>
+        Term: chụp, TF-IDF value: 0.23377796406159154 <br></br>
+        Term: ảnh, TF-IDF value: 0.07921005694723088 <br></br>
       </pre>
 
       <p>
-        This feature extractor converts each
-        <code translate="no" dir="ltr">
-          160x160x3
-        </code>{" "}
-        image into a
-        <code translate="no" dir="ltr">
-          5x5x1280
-        </code>{" "}
-        block of features. Let&#39;s see what it does to an example batch of
-        images:
+        After implementing the two methods mentioned above, we obtain the final
+        result:
       </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          image_batch, label_batch = next(iter(train_dataset)) feature_batch =
-          base_model(image_batch) print(feature_batch.shape)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        (32, 5, 5, 1280)
-      </pre>
 
-      <h2 id="feature_extraction" data-text="Feature extraction">
-        Feature extraction
-      </h2>
-
+      <pre
+        className="tfo-notebook-code-cell-output"
+        translate="no"
+        dir="ltr"
+        dangerouslySetInnerHTML={{
+          __html: `train: 0.9969
+dev:   0.6629
+test: 0.6224
+{'alpha': 6.397620627963636e-05, 'average': False, 'class_weight': 'balanced', 'early_stopping': False, 'epsilon': 0.1, 'eta0': 0.0, 'fit_intercept': True, 'l1_ratio': 0.15, 'learning_rate': 'optimal', 'loss': 'log_loss', 'max_iter': 200, 'n_iter_no_change': 5, 'n_jobs': None, 'penalty': 'l2', 'power_t': 0.5, 'random_state': 5, 'shuffle': True, 'tol': 0.001, 'validation_fraction': 0.1, 'verbose': 0, 'warm_start': False}
+{'class_weight': 'balanced', 'alpha': 6.397620627963636e-05}`,
+        }}
+      ></pre>
       <p>
-        In this step, you will freeze the convolutional base created from the
-        previous step and to use as a feature extractor. Additionally, you add a
-        classNameifier on top of it and train the top-level classNameifier.
+        This tutorial concludes here. We hope you have found it helpful. We
+        highly recommend downloading the notebook and experimenting with your
+        own optimization methods.
       </p>
-
-      <h3
-        id="freeze_the_convolutional_base"
-        data-text="Freeze the convolutional base"
-      >
-        Freeze the convolutional base
-      </h3>
-
-      <p>
-        It is important to freeze the convolutional base before you compile and
-        train the model. Freezing (by setting layer.trainable = False) prevents
-        the weights in a given layer from being updated during training.
-        MobileNet V2 has many layers, so setting the entire model&#39;s
-        <code translate="no" dir="ltr">
-          trainable
-        </code>{" "}
-        flag to False will freeze all of them.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          base_model.trainable = False
-        </code>
-      </pre>
-      <h3
-        id="important_note_about_batchnormalization_layers"
-        data-text="Important note about BatchNormalization layers"
-      >
-        Important note about BatchNormalization layers
-      </h3>
-
-      <p>
-        Many models contain
-        <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/BatchNormalization">
-          <code translate="no" dir="ltr">
-            tf.keras.layers.BatchNormalization
-          </code>
-        </a>
-        layers. This layer is a special case and precautions should be taken in
-        the context of fine-tuning, as shown later in this tutorial.
-      </p>
-
-      <p>
-        When you set
-        <code translate="no" dir="ltr">
-          layer.trainable = False
-        </code>
-        , the
-        <code translate="no" dir="ltr">
-          BatchNormalization
-        </code>{" "}
-        layer will run in inference mode, and will not update its mean and
-        variance statistics.
-      </p>
-
-      <p>
-        When you unfreeze a model that contains BatchNormalization layers in
-        order to do fine-tuning, you should keep the BatchNormalization layers
-        in inference mode by passing
-        <code translate="no" dir="ltr">
-          training = False
-        </code>{" "}
-        when calling the base model. Otherwise, the updates applied to the
-        non-trainable weights will destroy what the model has learned.
-      </p>
-
-      <p>
-        For more details, see the
-        <a href="https://www.tensorflow.org/guide/keras/transfer_learning">
-          Transfer learning guide
-        </a>
-        .
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          # Let&#39;s take a look at the base model architecture
-          base_model.summary()
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Model&colon; &quot;mobilenetv2_1.00_160&quot;
-        __________________________________________________________________________________________________
-        Layer (type) Output Shape Param # Connected to
-        ==================================================================================================
-        input_1 (InputLayer) [(None, 160, 160, 3)] 0 [] Conv1 (Conv2D) (None,
-        80, 80, 32) 864 [&#x27;input_1[0][0]&#x27;] bn_Conv1 (BatchNormalizati
-        (None, 80, 80, 32) 128 [&#x27;Conv1[0][0]&#x27;] on) Conv1_relu (ReLU)
-        (None, 80, 80, 32) 0 [&#x27;bn_Conv1[0][0]&#x27;]
-        expanded_conv_depthwise (D (None, 80, 80, 32) 288
-        [&#x27;Conv1_relu[0][0]&#x27;] epthwiseConv2D)
-        expanded_conv_depthwise_BN (None, 80, 80, 32) 128
-        [&#x27;expanded_conv_depthwise[0][0 (BatchNormalization) ]&#x27;]
-        expanded_conv_depthwise_re (None, 80, 80, 32) 0
-        [&#x27;expanded_conv_depthwise_BN[0 lu (ReLU) ][0]&#x27;]
-        expanded_conv_project (Con (None, 80, 80, 16) 512
-        [&#x27;expanded_conv_depthwise_relu v2D) [0][0]&#x27;]
-        expanded_conv_project_BN ( (None, 80, 80, 16) 64
-        [&#x27;expanded_conv_project[0][0]&#x27; BatchNormalization) ]
-        block_1_expand (Conv2D) (None, 80, 80, 96) 1536
-        [&#x27;expanded_conv_project_BN[0][ 0]&#x27;] block_1_expand_BN (BatchNo
-        (None, 80, 80, 96) 384 [&#x27;block_1_expand[0][0]&#x27;] rmalization)
-        block_1_expand_relu (ReLU) (None, 80, 80, 96) 0
-        [&#x27;block_1_expand_BN[0][0]&#x27;] block_1_pad (ZeroPadding2D (None,
-        81, 81, 96) 0 [&#x27;block_1_expand_relu[0][0]&#x27;] )
-        block_1_depthwise (Depthwi (None, 40, 40, 96) 864
-        [&#x27;block_1_pad[0][0]&#x27;] seConv2D) block_1_depthwise_BN (Batc
-        (None, 40, 40, 96) 384 [&#x27;block_1_depthwise[0][0]&#x27;]
-        hNormalization) block_1_depthwise_relu (Re (None, 40, 40, 96) 0
-        [&#x27;block_1_depthwise_BN[0][0]&#x27;] LU) block_1_project (Conv2D)
-        (None, 40, 40, 24) 2304 [&#x27;block_1_depthwise_relu[0][0] &#x27;]
-        block_1_project_BN (BatchN (None, 40, 40, 24) 96
-        [&#x27;block_1_project[0][0]&#x27;] ormalization) block_2_expand
-        (Conv2D) (None, 40, 40, 144) 3456 [&#x27;block_1_project_BN[0][0]&#x27;]
-        block_2_expand_BN (BatchNo (None, 40, 40, 144) 576
-        [&#x27;block_2_expand[0][0]&#x27;] rmalization) block_2_expand_relu
-        (ReLU) (None, 40, 40, 144) 0 [&#x27;block_2_expand_BN[0][0]&#x27;]
-        block_2_depthwise (Depthwi (None, 40, 40, 144) 1296
-        [&#x27;block_2_expand_relu[0][0]&#x27;] seConv2D) block_2_depthwise_BN
-        (Batc (None, 40, 40, 144) 576 [&#x27;block_2_depthwise[0][0]&#x27;]
-        hNormalization) block_2_depthwise_relu (Re (None, 40, 40, 144) 0
-        [&#x27;block_2_depthwise_BN[0][0]&#x27;] LU) block_2_project (Conv2D)
-        (None, 40, 40, 24) 3456 [&#x27;block_2_depthwise_relu[0][0] &#x27;]
-        block_2_project_BN (BatchN (None, 40, 40, 24) 96
-        [&#x27;block_2_project[0][0]&#x27;] ormalization) block_2_add (Add)
-        (None, 40, 40, 24) 0 [&#x27;block_1_project_BN[0][0]&#x27;,
-        &#x27;block_2_project_BN[0][0]&#x27;] block_3_expand (Conv2D) (None, 40,
-        40, 144) 3456 [&#x27;block_2_add[0][0]&#x27;] block_3_expand_BN (BatchNo
-        (None, 40, 40, 144) 576 [&#x27;block_3_expand[0][0]&#x27;] rmalization)
-        block_3_expand_relu (ReLU) (None, 40, 40, 144) 0
-        [&#x27;block_3_expand_BN[0][0]&#x27;] block_3_pad (ZeroPadding2D (None,
-        41, 41, 144) 0 [&#x27;block_3_expand_relu[0][0]&#x27;] )
-        block_3_depthwise (Depthwi (None, 20, 20, 144) 1296
-        [&#x27;block_3_pad[0][0]&#x27;] seConv2D) block_3_depthwise_BN (Batc
-        (None, 20, 20, 144) 576 [&#x27;block_3_depthwise[0][0]&#x27;]
-        hNormalization) block_3_depthwise_relu (Re (None, 20, 20, 144) 0
-        [&#x27;block_3_depthwise_BN[0][0]&#x27;] LU) block_3_project (Conv2D)
-        (None, 20, 20, 32) 4608 [&#x27;block_3_depthwise_relu[0][0] &#x27;]
-        block_3_project_BN (BatchN (None, 20, 20, 32) 128
-        [&#x27;block_3_project[0][0]&#x27;] ormalization) block_4_expand
-        (Conv2D) (None, 20, 20, 192) 6144 [&#x27;block_3_project_BN[0][0]&#x27;]
-        block_4_expand_BN (BatchNo (None, 20, 20, 192) 768
-        [&#x27;block_4_expand[0][0]&#x27;] rmalization) block_4_expand_relu
-        (ReLU) (None, 20, 20, 192) 0 [&#x27;block_4_expand_BN[0][0]&#x27;]
-        block_4_depthwise (Depthwi (None, 20, 20, 192) 1728
-        [&#x27;block_4_expand_relu[0][0]&#x27;] seConv2D) block_4_depthwise_BN
-        (Batc (None, 20, 20, 192) 768 [&#x27;block_4_depthwise[0][0]&#x27;]
-        hNormalization) block_4_depthwise_relu (Re (None, 20, 20, 192) 0
-        [&#x27;block_4_depthwise_BN[0][0]&#x27;] LU) block_4_project (Conv2D)
-        (None, 20, 20, 32) 6144 [&#x27;block_4_depthwise_relu[0][0] &#x27;]
-        block_4_project_BN (BatchN (None, 20, 20, 32) 128
-        [&#x27;block_4_project[0][0]&#x27;] ormalization) block_4_add (Add)
-        (None, 20, 20, 32) 0 [&#x27;block_3_project_BN[0][0]&#x27;,
-        &#x27;block_4_project_BN[0][0]&#x27;] block_5_expand (Conv2D) (None, 20,
-        20, 192) 6144 [&#x27;block_4_add[0][0]&#x27;] block_5_expand_BN (BatchNo
-        (None, 20, 20, 192) 768 [&#x27;block_5_expand[0][0]&#x27;] rmalization)
-        block_5_expand_relu (ReLU) (None, 20, 20, 192) 0
-        [&#x27;block_5_expand_BN[0][0]&#x27;] block_5_depthwise (Depthwi (None,
-        20, 20, 192) 1728 [&#x27;block_5_expand_relu[0][0]&#x27;] seConv2D)
-        block_5_depthwise_BN (Batc (None, 20, 20, 192) 768
-        [&#x27;block_5_depthwise[0][0]&#x27;] hNormalization)
-        block_5_depthwise_relu (Re (None, 20, 20, 192) 0
-        [&#x27;block_5_depthwise_BN[0][0]&#x27;] LU) block_5_project (Conv2D)
-        (None, 20, 20, 32) 6144 [&#x27;block_5_depthwise_relu[0][0] &#x27;]
-        block_5_project_BN (BatchN (None, 20, 20, 32) 128
-        [&#x27;block_5_project[0][0]&#x27;] ormalization) block_5_add (Add)
-        (None, 20, 20, 32) 0 [&#x27;block_4_add[0][0]&#x27;,
-        &#x27;block_5_project_BN[0][0]&#x27;] block_6_expand (Conv2D) (None, 20,
-        20, 192) 6144 [&#x27;block_5_add[0][0]&#x27;] block_6_expand_BN (BatchNo
-        (None, 20, 20, 192) 768 [&#x27;block_6_expand[0][0]&#x27;] rmalization)
-        block_6_expand_relu (ReLU) (None, 20, 20, 192) 0
-        [&#x27;block_6_expand_BN[0][0]&#x27;] block_6_pad (ZeroPadding2D (None,
-        21, 21, 192) 0 [&#x27;block_6_expand_relu[0][0]&#x27;] )
-        block_6_depthwise (Depthwi (None, 10, 10, 192) 1728
-        [&#x27;block_6_pad[0][0]&#x27;] seConv2D) block_6_depthwise_BN (Batc
-        (None, 10, 10, 192) 768 [&#x27;block_6_depthwise[0][0]&#x27;]
-        hNormalization) block_6_depthwise_relu (Re (None, 10, 10, 192) 0
-        [&#x27;block_6_depthwise_BN[0][0]&#x27;] LU) block_6_project (Conv2D)
-        (None, 10, 10, 64) 12288 [&#x27;block_6_depthwise_relu[0][0] &#x27;]
-        block_6_project_BN (BatchN (None, 10, 10, 64) 256
-        [&#x27;block_6_project[0][0]&#x27;] ormalization) block_7_expand
-        (Conv2D) (None, 10, 10, 384) 24576
-        [&#x27;block_6_project_BN[0][0]&#x27;] block_7_expand_BN (BatchNo (None,
-        10, 10, 384) 1536 [&#x27;block_7_expand[0][0]&#x27;] rmalization)
-        block_7_expand_relu (ReLU) (None, 10, 10, 384) 0
-        [&#x27;block_7_expand_BN[0][0]&#x27;] block_7_depthwise (Depthwi (None,
-        10, 10, 384) 3456 [&#x27;block_7_expand_relu[0][0]&#x27;] seConv2D)
-        block_7_depthwise_BN (Batc (None, 10, 10, 384) 1536
-        [&#x27;block_7_depthwise[0][0]&#x27;] hNormalization)
-        block_7_depthwise_relu (Re (None, 10, 10, 384) 0
-        [&#x27;block_7_depthwise_BN[0][0]&#x27;] LU) block_7_project (Conv2D)
-        (None, 10, 10, 64) 24576 [&#x27;block_7_depthwise_relu[0][0] &#x27;]
-        block_7_project_BN (BatchN (None, 10, 10, 64) 256
-        [&#x27;block_7_project[0][0]&#x27;] ormalization) block_7_add (Add)
-        (None, 10, 10, 64) 0 [&#x27;block_6_project_BN[0][0]&#x27;,
-        &#x27;block_7_project_BN[0][0]&#x27;] block_8_expand (Conv2D) (None, 10,
-        10, 384) 24576 [&#x27;block_7_add[0][0]&#x27;] block_8_expand_BN
-        (BatchNo (None, 10, 10, 384) 1536 [&#x27;block_8_expand[0][0]&#x27;]
-        rmalization) block_8_expand_relu (ReLU) (None, 10, 10, 384) 0
-        [&#x27;block_8_expand_BN[0][0]&#x27;] block_8_depthwise (Depthwi (None,
-        10, 10, 384) 3456 [&#x27;block_8_expand_relu[0][0]&#x27;] seConv2D)
-        block_8_depthwise_BN (Batc (None, 10, 10, 384) 1536
-        [&#x27;block_8_depthwise[0][0]&#x27;] hNormalization)
-        block_8_depthwise_relu (Re (None, 10, 10, 384) 0
-        [&#x27;block_8_depthwise_BN[0][0]&#x27;] LU) block_8_project (Conv2D)
-        (None, 10, 10, 64) 24576 [&#x27;block_8_depthwise_relu[0][0] &#x27;]
-        block_8_project_BN (BatchN (None, 10, 10, 64) 256
-        [&#x27;block_8_project[0][0]&#x27;] ormalization) block_8_add (Add)
-        (None, 10, 10, 64) 0 [&#x27;block_7_add[0][0]&#x27;,
-        &#x27;block_8_project_BN[0][0]&#x27;] block_9_expand (Conv2D) (None, 10,
-        10, 384) 24576 [&#x27;block_8_add[0][0]&#x27;] block_9_expand_BN
-        (BatchNo (None, 10, 10, 384) 1536 [&#x27;block_9_expand[0][0]&#x27;]
-        rmalization) block_9_expand_relu (ReLU) (None, 10, 10, 384) 0
-        [&#x27;block_9_expand_BN[0][0]&#x27;] block_9_depthwise (Depthwi (None,
-        10, 10, 384) 3456 [&#x27;block_9_expand_relu[0][0]&#x27;] seConv2D)
-        block_9_depthwise_BN (Batc (None, 10, 10, 384) 1536
-        [&#x27;block_9_depthwise[0][0]&#x27;] hNormalization)
-        block_9_depthwise_relu (Re (None, 10, 10, 384) 0
-        [&#x27;block_9_depthwise_BN[0][0]&#x27;] LU) block_9_project (Conv2D)
-        (None, 10, 10, 64) 24576 [&#x27;block_9_depthwise_relu[0][0] &#x27;]
-        block_9_project_BN (BatchN (None, 10, 10, 64) 256
-        [&#x27;block_9_project[0][0]&#x27;] ormalization) block_9_add (Add)
-        (None, 10, 10, 64) 0 [&#x27;block_8_add[0][0]&#x27;,
-        &#x27;block_9_project_BN[0][0]&#x27;] block_10_expand (Conv2D) (None,
-        10, 10, 384) 24576 [&#x27;block_9_add[0][0]&#x27;] block_10_expand_BN
-        (BatchN (None, 10, 10, 384) 1536 [&#x27;block_10_expand[0][0]&#x27;]
-        ormalization) block_10_expand_relu (ReLU (None, 10, 10, 384) 0
-        [&#x27;block_10_expand_BN[0][0]&#x27;] ) block_10_depthwise (Depthw
-        (None, 10, 10, 384) 3456 [&#x27;block_10_expand_relu[0][0]&#x27;]
-        iseConv2D) block_10_depthwise_BN (Bat (None, 10, 10, 384) 1536
-        [&#x27;block_10_depthwise[0][0]&#x27;] chNormalization)
-        block_10_depthwise_relu (R (None, 10, 10, 384) 0
-        [&#x27;block_10_depthwise_BN[0][0]&#x27; eLU) ] block_10_project
-        (Conv2D) (None, 10, 10, 96) 36864 [&#x27;block_10_depthwise_relu[0][0
-        ]&#x27;] block_10_project_BN (Batch (None, 10, 10, 96) 384
-        [&#x27;block_10_project[0][0]&#x27;] Normalization) block_11_expand
-        (Conv2D) (None, 10, 10, 576) 55296
-        [&#x27;block_10_project_BN[0][0]&#x27;] block_11_expand_BN (BatchN
-        (None, 10, 10, 576) 2304 [&#x27;block_11_expand[0][0]&#x27;]
-        ormalization) block_11_expand_relu (ReLU (None, 10, 10, 576) 0
-        [&#x27;block_11_expand_BN[0][0]&#x27;] ) block_11_depthwise (Depthw
-        (None, 10, 10, 576) 5184 [&#x27;block_11_expand_relu[0][0]&#x27;]
-        iseConv2D) block_11_depthwise_BN (Bat (None, 10, 10, 576) 2304
-        [&#x27;block_11_depthwise[0][0]&#x27;] chNormalization)
-        block_11_depthwise_relu (R (None, 10, 10, 576) 0
-        [&#x27;block_11_depthwise_BN[0][0]&#x27; eLU) ] block_11_project
-        (Conv2D) (None, 10, 10, 96) 55296 [&#x27;block_11_depthwise_relu[0][0
-        ]&#x27;] block_11_project_BN (Batch (None, 10, 10, 96) 384
-        [&#x27;block_11_project[0][0]&#x27;] Normalization) block_11_add (Add)
-        (None, 10, 10, 96) 0 [&#x27;block_10_project_BN[0][0]&#x27;,
-        &#x27;block_11_project_BN[0][0]&#x27;] block_12_expand (Conv2D) (None,
-        10, 10, 576) 55296 [&#x27;block_11_add[0][0]&#x27;] block_12_expand_BN
-        (BatchN (None, 10, 10, 576) 2304 [&#x27;block_12_expand[0][0]&#x27;]
-        ormalization) block_12_expand_relu (ReLU (None, 10, 10, 576) 0
-        [&#x27;block_12_expand_BN[0][0]&#x27;] ) block_12_depthwise (Depthw
-        (None, 10, 10, 576) 5184 [&#x27;block_12_expand_relu[0][0]&#x27;]
-        iseConv2D) block_12_depthwise_BN (Bat (None, 10, 10, 576) 2304
-        [&#x27;block_12_depthwise[0][0]&#x27;] chNormalization)
-        block_12_depthwise_relu (R (None, 10, 10, 576) 0
-        [&#x27;block_12_depthwise_BN[0][0]&#x27; eLU) ] block_12_project
-        (Conv2D) (None, 10, 10, 96) 55296 [&#x27;block_12_depthwise_relu[0][0
-        ]&#x27;] block_12_project_BN (Batch (None, 10, 10, 96) 384
-        [&#x27;block_12_project[0][0]&#x27;] Normalization) block_12_add (Add)
-        (None, 10, 10, 96) 0 [&#x27;block_11_add[0][0]&#x27;,
-        &#x27;block_12_project_BN[0][0]&#x27;] block_13_expand (Conv2D) (None,
-        10, 10, 576) 55296 [&#x27;block_12_add[0][0]&#x27;] block_13_expand_BN
-        (BatchN (None, 10, 10, 576) 2304 [&#x27;block_13_expand[0][0]&#x27;]
-        ormalization) block_13_expand_relu (ReLU (None, 10, 10, 576) 0
-        [&#x27;block_13_expand_BN[0][0]&#x27;] ) block_13_pad (ZeroPadding2
-        (None, 11, 11, 576) 0 [&#x27;block_13_expand_relu[0][0]&#x27;] D)
-        block_13_depthwise (Depthw (None, 5, 5, 576) 5184
-        [&#x27;block_13_pad[0][0]&#x27;] iseConv2D) block_13_depthwise_BN (Bat
-        (None, 5, 5, 576) 2304 [&#x27;block_13_depthwise[0][0]&#x27;]
-        chNormalization) block_13_depthwise_relu (R (None, 5, 5, 576) 0
-        [&#x27;block_13_depthwise_BN[0][0]&#x27; eLU) ] block_13_project
-        (Conv2D) (None, 5, 5, 160) 92160 [&#x27;block_13_depthwise_relu[0][0
-        ]&#x27;] block_13_project_BN (Batch (None, 5, 5, 160) 640
-        [&#x27;block_13_project[0][0]&#x27;] Normalization) block_14_expand
-        (Conv2D) (None, 5, 5, 960) 153600
-        [&#x27;block_13_project_BN[0][0]&#x27;] block_14_expand_BN (BatchN
-        (None, 5, 5, 960) 3840 [&#x27;block_14_expand[0][0]&#x27;] ormalization)
-        block_14_expand_relu (ReLU (None, 5, 5, 960) 0
-        [&#x27;block_14_expand_BN[0][0]&#x27;] ) block_14_depthwise (Depthw
-        (None, 5, 5, 960) 8640 [&#x27;block_14_expand_relu[0][0]&#x27;]
-        iseConv2D) block_14_depthwise_BN (Bat (None, 5, 5, 960) 3840
-        [&#x27;block_14_depthwise[0][0]&#x27;] chNormalization)
-        block_14_depthwise_relu (R (None, 5, 5, 960) 0
-        [&#x27;block_14_depthwise_BN[0][0]&#x27; eLU) ] block_14_project
-        (Conv2D) (None, 5, 5, 160) 153600 [&#x27;block_14_depthwise_relu[0][0
-        ]&#x27;] block_14_project_BN (Batch (None, 5, 5, 160) 640
-        [&#x27;block_14_project[0][0]&#x27;] Normalization) block_14_add (Add)
-        (None, 5, 5, 160) 0 [&#x27;block_13_project_BN[0][0]&#x27;,
-        &#x27;block_14_project_BN[0][0]&#x27;] block_15_expand (Conv2D) (None,
-        5, 5, 960) 153600 [&#x27;block_14_add[0][0]&#x27;] block_15_expand_BN
-        (BatchN (None, 5, 5, 960) 3840 [&#x27;block_15_expand[0][0]&#x27;]
-        ormalization) block_15_expand_relu (ReLU (None, 5, 5, 960) 0
-        [&#x27;block_15_expand_BN[0][0]&#x27;] ) block_15_depthwise (Depthw
-        (None, 5, 5, 960) 8640 [&#x27;block_15_expand_relu[0][0]&#x27;]
-        iseConv2D) block_15_depthwise_BN (Bat (None, 5, 5, 960) 3840
-        [&#x27;block_15_depthwise[0][0]&#x27;] chNormalization)
-        block_15_depthwise_relu (R (None, 5, 5, 960) 0
-        [&#x27;block_15_depthwise_BN[0][0]&#x27; eLU) ] block_15_project
-        (Conv2D) (None, 5, 5, 160) 153600 [&#x27;block_15_depthwise_relu[0][0
-        ]&#x27;] block_15_project_BN (Batch (None, 5, 5, 160) 640
-        [&#x27;block_15_project[0][0]&#x27;] Normalization) block_15_add (Add)
-        (None, 5, 5, 160) 0 [&#x27;block_14_add[0][0]&#x27;,
-        &#x27;block_15_project_BN[0][0]&#x27;] block_16_expand (Conv2D) (None,
-        5, 5, 960) 153600 [&#x27;block_15_add[0][0]&#x27;] block_16_expand_BN
-        (BatchN (None, 5, 5, 960) 3840 [&#x27;block_16_expand[0][0]&#x27;]
-        ormalization) block_16_expand_relu (ReLU (None, 5, 5, 960) 0
-        [&#x27;block_16_expand_BN[0][0]&#x27;] ) block_16_depthwise (Depthw
-        (None, 5, 5, 960) 8640 [&#x27;block_16_expand_relu[0][0]&#x27;]
-        iseConv2D) block_16_depthwise_BN (Bat (None, 5, 5, 960) 3840
-        [&#x27;block_16_depthwise[0][0]&#x27;] chNormalization)
-        block_16_depthwise_relu (R (None, 5, 5, 960) 0
-        [&#x27;block_16_depthwise_BN[0][0]&#x27; eLU) ] block_16_project
-        (Conv2D) (None, 5, 5, 320) 307200 [&#x27;block_16_depthwise_relu[0][0
-        ]&#x27;] block_16_project_BN (Batch (None, 5, 5, 320) 1280
-        [&#x27;block_16_project[0][0]&#x27;] Normalization) Conv_1 (Conv2D)
-        (None, 5, 5, 1280) 409600 [&#x27;block_16_project_BN[0][0]&#x27;]
-        Conv_1_bn (BatchNormalizat (None, 5, 5, 1280) 5120
-        [&#x27;Conv_1[0][0]&#x27;] ion) out_relu (ReLU) (None, 5, 5, 1280) 0
-        [&#x27;Conv_1_bn[0][0]&#x27;]
-        ==================================================================================================
-        Total params&colon; 2257984 (8.61 MB) Trainable params&colon; 0 (0.00
-        Byte) Non-trainable params&colon; 2257984 (8.61 MB)
-        __________________________________________________________________________________________________
-      </pre>
-
-      <h3
-        id="add_a_classNameification_head"
-        data-text="Add a classNameification head"
-      >
-        Add a classNameification head
-      </h3>
-
-      <p>
-        To generate predictions from the block of features, average over the
-        spatial
-        <code translate="no" dir="ltr">
-          5x5
-        </code>{" "}
-        spatial locations, using a
-        <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/GlobalAveragePooling2D">
-          <code translate="no" dir="ltr">
-            tf.keras.layers.GlobalAveragePooling2D
-          </code>
-        </a>
-        layer to convert the features to a single 1280-element vector per image.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          global_average_layer = tf.keras.layers.GlobalAveragePooling2D()
-          feature_batch_average = global_average_layer(feature_batch)
-          print(feature_batch_average.shape)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        (32, 1280)
-      </pre>
-
-      <p>
-        Apply a
-        <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/Dense">
-          <code translate="no" dir="ltr">
-            tf.keras.layers.Dense
-          </code>
-        </a>
-        layer to convert these features into a single prediction per image. You
-        don&#39;t need an activation function here because this prediction will
-        be treated as a
-        <code translate="no" dir="ltr">
-          logit
-        </code>
-        , or a raw prediction value. Positive numbers predict className 1,
-        negative numbers predict className 0.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          prediction_layer = tf.keras.layers.Dense(1) prediction_batch =
-          prediction_layer(feature_batch_average) print(prediction_batch.shape)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        (32, 1)
-      </pre>
-
-      <p>
-        Build a model by chaining together the data augmentation, rescaling,
-        <code translate="no" dir="ltr">
-          base_model
-        </code>{" "}
-        and feature extractor layers using the
-        <a href="https://www.tensorflow.org/guide/keras/functional">
-          Keras Functional API
-        </a>
-        . As previously mentioned, use
-        <code translate="no" dir="ltr">
-          training=False
-        </code>{" "}
-        as our model contains a
-        <code translate="no" dir="ltr">
-          BatchNormalization
-        </code>
-        layer.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          inputs = tf.keras.Input(shape=(160, 160, 3)) x =
-          data_augmentation(inputs) x = preprocess_input(x) x = base_model(x,
-          training=False) x = global_average_layer(x) x =
-          tf.keras.layers.Dropout(0.2)(x) outputs = prediction_layer(x) model =
-          tf.keras.Model(inputs, outputs)
-        </code>
-      </pre>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          model.summary()
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Model&colon; &quot;model&quot;
-        _________________________________________________________________ Layer
-        (type) Output Shape Param #
-        =================================================================
-        input_2 (InputLayer) [(None, 160, 160, 3)] 0 sequential (Sequential)
-        (None, 160, 160, 3) 0 tf.math.truediv (TFOpLambd (None, 160, 160, 3) 0
-        a) tf.math.subtract (TFOpLamb (None, 160, 160, 3) 0 da)
-        mobilenetv2_1.00_160 (Func (None, 5, 5, 1280) 2257984 tional)
-        global_average_pooling2d ( (None, 1280) 0 GlobalAveragePooling2D)
-        dropout (Dropout) (None, 1280) 0 dense (Dense) (None, 1) 1281
-        ================================================================= Total
-        params&colon; 2259265 (8.62 MB) Trainable params&colon; 1281 (5.00 KB)
-        Non-trainable params&colon; 2257984 (8.61 MB)
-        _________________________________________________________________
-      </pre>
-
-      <p>
-        The 8+ million parameters in MobileNet are frozen, but there are 1.2
-        thousand <em>trainable</em> parameters in the Dense layer. These are
-        divided between two
-        <a href="https://www.tensorflow.org/api_docs/python/tf/Variable">
-          <code translate="no" dir="ltr">
-            tf.Variable
-          </code>
-        </a>
-        objects, the weights and biases.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          len(model.trainable_variables)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        2
-      </pre>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          tf.keras.utils.plot_model(model, show_shapes=True)
-        </code>
-      </pre>
-      <p>
-        <img
-          src="/static/tutorials/images/transfer_learning_files/output_jeGk93R2ahav_0.png"
-          alt="png"
-        />
-      </p>
-
-      <h3 id="compile_the_model" data-text="Compile the model">
-        Compile the model
-      </h3>
-
-      <p>
-        Compile the model before training it. Since there are two classNamees,
-        use the
-        <a href="https://www.tensorflow.org/api_docs/python/tf/keras/losses/BinaryCrossentropy">
-          <code translate="no" dir="ltr">
-            tf.keras.losses.BinaryCrossentropy
-          </code>
-        </a>
-        loss with
-        <code translate="no" dir="ltr">
-          from_logits=True
-        </code>{" "}
-        since the model provides a linear output.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          base_learning_rate = 0.0001
-          model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=base_learning_rate),
-          loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-          metrics=[tf.keras.metrics.BinaryAccuracy(threshold=0,
-          name=&#39;accuracy&#39;)])
-        </code>
-      </pre>
-      <h3 id="train_the_model" data-text="Train the model">
-        Train the model
-      </h3>
-
-      <p>
-        After training for 10 epochs, you should see ~96% accuracy on the
-        validation set.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          initial_epochs = 10 loss0, accuracy0 =
-          model.evaluate(validation_dataset)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        26/26 [==============================] - 3s 38ms/step - loss&colon;
-        1.0864 - accuracy&colon; 0.2228
-      </pre>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          {'print("initial loss: {:.2f}".format(loss0))'}
-          {'print("initial accuracy: {:.2f}".format(accuracy0))'}
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        initial loss&colon; 1.09 initial accuracy&colon; 0.22
-      </pre>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          history = model.fit(train_dataset, epochs=initial_epochs,
-          validation_data=validation_dataset)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Epoch 1/10 63/63 [==============================] - 6s 45ms/step -
-        loss&colon; 0.9132 - accuracy&colon; 0.4025 - val_loss&colon; 0.7343 -
-        val_accuracy&colon; 0.5136 Epoch 2/10 63/63
-        [==============================] - 2s 38ms/step - loss&colon; 0.6518 -
-        accuracy&colon; 0.6340 - val_loss&colon; 0.5089 - val_accuracy&colon;
-        0.7847 Epoch 3/10 63/63 [==============================] - 2s 37ms/step
-        - loss&colon; 0.4936 - accuracy&colon; 0.7685 - val_loss&colon; 0.3806 -
-        val_accuracy&colon; 0.8948 Epoch 4/10 63/63
-        [==============================] - 2s 37ms/step - loss&colon; 0.3950 -
-        accuracy&colon; 0.8440 - val_loss&colon; 0.3052 - val_accuracy&colon;
-        0.9307 Epoch 5/10 63/63 [==============================] - 2s 37ms/step
-        - loss&colon; 0.3506 - accuracy&colon; 0.8645 - val_loss&colon; 0.2457 -
-        val_accuracy&colon; 0.9567 Epoch 6/10 63/63
-        [==============================] - 2s 38ms/step - loss&colon; 0.3016 -
-        accuracy&colon; 0.8915 - val_loss&colon; 0.2156 - val_accuracy&colon;
-        0.9592 Epoch 7/10 63/63 [==============================] - 2s 37ms/step
-        - loss&colon; 0.2725 - accuracy&colon; 0.9055 - val_loss&colon; 0.1880 -
-        val_accuracy&colon; 0.9629 Epoch 8/10 63/63
-        [==============================] - 2s 37ms/step - loss&colon; 0.2567 -
-        accuracy&colon; 0.9100 - val_loss&colon; 0.1705 - val_accuracy&colon;
-        0.9592 Epoch 9/10 63/63 [==============================] - 2s 37ms/step
-        - loss&colon; 0.2394 - accuracy&colon; 0.9120 - val_loss&colon; 0.1543 -
-        val_accuracy&colon; 0.9691 Epoch 10/10 63/63
-        [==============================] - 2s 38ms/step - loss&colon; 0.2243 -
-        accuracy&colon; 0.9170 - val_loss&colon; 0.1387 - val_accuracy&colon;
-        0.9678
-      </pre>
-
-      <h3 id="learning_curves" data-text="Learning curves">
-        Learning curves
-      </h3>
-
-      <p>
-        Let&#39;s take a look at the learning curves of the training and
-        validation accuracy/loss when using the MobileNetV2 base model as a
-        fixed feature extractor.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          acc = history.history[&#39;accuracy&#39;] val_acc =
-          history.history[&#39;val_accuracy&#39;] loss =
-          history.history[&#39;loss&#39;] val_loss =
-          history.history[&#39;val_loss&#39;] plt.figure(figsize=(8, 8))
-          plt.subplot(2, 1, 1) plt.plot(acc, label=&#39;Training Accuracy&#39;)
-          plt.plot(val_acc, label=&#39;Validation Accuracy&#39;)
-          plt.legend(loc=&#39;lower right&#39;) plt.ylabel(&#39;Accuracy&#39;)
-          plt.ylim([min(plt.ylim()),1]) plt.title(&#39;Training and Validation
-          Accuracy&#39;) plt.subplot(2, 1, 2) plt.plot(loss, label=&#39;Training
-          Loss&#39;) plt.plot(val_loss, label=&#39;Validation Loss&#39;)
-          plt.legend(loc=&#39;upper right&#39;) plt.ylabel(&#39;Cross
-          Entropy&#39;) plt.ylim([0,1.0]) plt.title(&#39;Training and Validation
-          Loss&#39;) plt.xlabel(&#39;epoch&#39;) plt.show()
-        </code>
-      </pre>
-      <p>
-        <img
-          src="/static/tutorials/images/transfer_learning_files/output_53OTCh3jnbwV_0.png"
-          alt="png"
-        />
-      </p>
-      <aside className="note">
-        <strong>Note:</strong>
-        <span>
-          If you are wondering why the validation metrics are clearly better
-          than the training metrics, the main factor is because layers like
-          <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/BatchNormalization">
-            <code translate="no" dir="ltr">
-              tf.keras.layers.BatchNormalization
-            </code>
-          </a>
-          and
-          <a href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/Dropout">
-            <code translate="no" dir="ltr">
-              tf.keras.layers.Dropout
-            </code>
-          </a>
-          affect accuracy during training. They are turned off when calculating
-          validation loss.
-        </span>
-      </aside>
-      <p>
-        To a lesser extent, it is also because training metrics report the
-        average for an epoch, while validation metrics are evaluated after the
-        epoch, so validation metrics see a model that has trained slightly
-        longer.
-      </p>
-
-      <h2 id="fine_tuning" data-text="Fine tuning">
-        Fine tuning
-      </h2>
-
-      <p>
-        In the feature extraction experiment, you were only training a few
-        layers on top of an MobileNetV2 base model. The weights of the
-        pre-trained network were <strong>not</strong> updated during training.
-      </p>
-
-      <p>
-        One way to increase performance even further is to train (or
-        &quot;fine-tune&quot;) the weights of the top layers of the pre-trained
-        model alongside the training of the classNameifier you added. The
-        training process will force the weights to be tuned from generic feature
-        maps to features associated specifically with the dataset.
-      </p>
-      <aside className="note">
-        <strong>Note:</strong>
-        <span>
-          This should only be attempted after you have trained the top-level
-          classNameifier with the pre-trained model set to non-trainable. If you
-          add a randomly initialized classNameifier on top of a pre-trained
-          model and attempt to train all layers jointly, the magnitude of the
-          gradient updates will be too large (due to the random weights from the
-          classNameifier) and your pre-trained model will forget what it has
-          learned.
-        </span>
-      </aside>
-      <p>
-        Also, you should try to fine-tune a small number of top layers rather
-        than the whole MobileNet model. In most convolutional networks, the
-        higher up a layer is, the more specialized it is. The first few layers
-        learn very simple and generic features that generalize to almost all
-        types of images. As you go higher up, the features are increasingly more
-        specific to the dataset on which the model was trained. The goal of
-        fine-tuning is to adapt these specialized features to work with the new
-        dataset, rather than overwrite the generic learning.
-      </p>
-
-      <h3
-        id="un-freeze_the_top_layers_of_the_model"
-        data-text="Un-freeze the top layers of the model"
-      >
-        Un-freeze the top layers of the model
-      </h3>
-
-      <p>
-        All you need to do is unfreeze the
-        <code translate="no" dir="ltr">
-          base_model
-        </code>{" "}
-        and set the bottom layers to be un-trainable. Then, you should recompile
-        the model (necessary for these changes to take effect), and resume
-        training.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          base_model.trainable = True
-        </code>
-      </pre>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          # Let&#39;s take a look to see how many layers are in the base model
-          print(&#34;Number of layers in the base model: &#34;,
-          len(base_model.layers)) # Fine-tune from this layer onwards
-          fine_tune_at = 100 # Freeze all the layers before the `fine_tune_at`
-          layer for layer in base_model.layers[:fine_tune_at]: layer.trainable =
-          False
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Number of layers in the base model&colon; 154
-      </pre>
-
-      <h3 id="compile_the_model_2" data-text="Compile the model">
-        Compile the model
-      </h3>
-
-      <p>
-        As you are training a much larger model and want to readapt the
-        pretrained weights, it is important to use a lower learning rate at this
-        stage. Otherwise, your model could overfit very quickly.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          model.compile(loss=tf.keras.losses.BinaryCrossentropy(from_logits=True),
-          optimizer =
-          tf.keras.optimizers.RMSprop(learning_rate=base_learning_rate/10),
-          metrics=[tf.keras.metrics.BinaryAccuracy(threshold=0,
-          name=&#39;accuracy&#39;)])
-        </code>
-      </pre>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          model.summary()
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Model&colon; &quot;model&quot;
-        _________________________________________________________________ Layer
-        (type) Output Shape Param #
-        =================================================================
-        input_2 (InputLayer) [(None, 160, 160, 3)] 0 sequential (Sequential)
-        (None, 160, 160, 3) 0 tf.math.truediv (TFOpLambd (None, 160, 160, 3) 0
-        a) tf.math.subtract (TFOpLamb (None, 160, 160, 3) 0 da)
-        mobilenetv2_1.00_160 (Func (None, 5, 5, 1280) 2257984 tional)
-        global_average_pooling2d ( (None, 1280) 0 GlobalAveragePooling2D)
-        dropout (Dropout) (None, 1280) 0 dense (Dense) (None, 1) 1281
-        ================================================================= Total
-        params&colon; 2259265 (8.62 MB) Trainable params&colon; 1862721 (7.11
-        MB) Non-trainable params&colon; 396544 (1.51 MB)
-        _________________________________________________________________
-      </pre>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          len(model.trainable_variables)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        56
-      </pre>
-
-      <h3
-        id="continue_training_the_model"
-        data-text="Continue training the model"
-      >
-        Continue training the model
-      </h3>
-
-      <p>
-        If you trained to convergence earlier, this step will improve your
-        accuracy by a few percentage points.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          fine_tune_epochs = 10 total_epochs = initial_epochs + fine_tune_epochs
-          history_fine = model.fit(train_dataset, epochs=total_epochs,
-          initial_epoch=history.epoch[-1], validation_data=validation_dataset)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Epoch 10/20 63/63 [==============================] - 11s 64ms/step -
-        loss&colon; 0.1555 - accuracy&colon; 0.9365 - val_loss&colon; 0.0543 -
-        val_accuracy&colon; 0.9827 Epoch 11/20 63/63
-        [==============================] - 3s 47ms/step - loss&colon; 0.1151 -
-        accuracy&colon; 0.9500 - val_loss&colon; 0.0739 - val_accuracy&colon;
-        0.9790 Epoch 12/20 63/63 [==============================] - 3s 47ms/step
-        - loss&colon; 0.1042 - accuracy&colon; 0.9630 - val_loss&colon; 0.0415 -
-        val_accuracy&colon; 0.9851 Epoch 13/20 63/63
-        [==============================] - 3s 47ms/step - loss&colon; 0.1043 -
-        accuracy&colon; 0.9610 - val_loss&colon; 0.0362 - val_accuracy&colon;
-        0.9889 Epoch 14/20 63/63 [==============================] - 3s 47ms/step
-        - loss&colon; 0.0814 - accuracy&colon; 0.9650 - val_loss&colon; 0.0371 -
-        val_accuracy&colon; 0.9864 Epoch 15/20 63/63
-        [==============================] - 3s 48ms/step - loss&colon; 0.0770 -
-        accuracy&colon; 0.9670 - val_loss&colon; 0.0417 - val_accuracy&colon;
-        0.9839 Epoch 16/20 63/63 [==============================] - 3s 48ms/step
-        - loss&colon; 0.0719 - accuracy&colon; 0.9735 - val_loss&colon; 0.0363 -
-        val_accuracy&colon; 0.9839 Epoch 17/20 63/63
-        [==============================] - 3s 48ms/step - loss&colon; 0.0768 -
-        accuracy&colon; 0.9680 - val_loss&colon; 0.0397 - val_accuracy&colon;
-        0.9851 Epoch 18/20 63/63 [==============================] - 3s 48ms/step
-        - loss&colon; 0.0736 - accuracy&colon; 0.9715 - val_loss&colon; 0.0347 -
-        val_accuracy&colon; 0.9889 Epoch 19/20 63/63
-        [==============================] - 3s 48ms/step - loss&colon; 0.0510 -
-        accuracy&colon; 0.9810 - val_loss&colon; 0.0373 - val_accuracy&colon;
-        0.9839 Epoch 20/20 63/63 [==============================] - 3s 48ms/step
-        - loss&colon; 0.0552 - accuracy&colon; 0.9815 - val_loss&colon; 0.0345 -
-        val_accuracy&colon; 0.9889
-      </pre>
-
-      <p>
-        Let&#39;s take a look at the learning curves of the training and
-        validation accuracy/loss when fine-tuning the last few layers of the
-        MobileNetV2 base model and training the classNameifier on top of it. The
-        validation loss is much higher than the training loss, so you may get
-        some overfitting.
-      </p>
-
-      <p>
-        You may also get some overfitting as the new training set is relatively
-        small and similar to the original MobileNetV2 datasets.
-      </p>
-
-      <p>
-        After fine tuning the model nearly reaches 98% accuracy on the
-        validation set.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          acc += history_fine.history[&#39;accuracy&#39;] val_acc +=
-          history_fine.history[&#39;val_accuracy&#39;] loss +=
-          history_fine.history[&#39;loss&#39;] val_loss +=
-          history_fine.history[&#39;val_loss&#39;]
-        </code>
-      </pre>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          plt.figure(figsize=(8, 8)) plt.subplot(2, 1, 1) plt.plot(acc,
-          label=&#39;Training Accuracy&#39;) plt.plot(val_acc,
-          label=&#39;Validation Accuracy&#39;) plt.ylim([0.8, 1])
-          plt.plot([initial_epochs-1,initial_epochs-1], plt.ylim(),
-          label=&#39;Start Fine Tuning&#39;) plt.legend(loc=&#39;lower
-          right&#39;) plt.title(&#39;Training and Validation Accuracy&#39;)
-          plt.subplot(2, 1, 2) plt.plot(loss, label=&#39;Training Loss&#39;)
-          plt.plot(val_loss, label=&#39;Validation Loss&#39;) plt.ylim([0, 1.0])
-          plt.plot([initial_epochs-1,initial_epochs-1], plt.ylim(),
-          label=&#39;Start Fine Tuning&#39;) plt.legend(loc=&#39;upper
-          right&#39;) plt.title(&#39;Training and Validation Loss&#39;)
-          plt.xlabel(&#39;epoch&#39;) plt.show()
-        </code>
-      </pre>
-      <p>
-        <img
-          src="/static/tutorials/images/transfer_learning_files/output_chW103JUItdk_0.png"
-          alt="png"
-        />
-      </p>
-
-      <h3 id="evaluation_and_prediction" data-text="Evaluation and prediction">
-        Evaluation and prediction
-      </h3>
-
-      <p>
-        Finally you can verify the performance of the model on new data using
-        test set.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          loss, accuracy = model.evaluate(test_dataset) print(&#39;Test accuracy
-          :&#39;, accuracy)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        6/6 [==============================] - 0s 26ms/step - loss&colon; 0.0262
-        - accuracy&colon; 0.9948 Test accuracy &colon; 0.9947916865348816
-      </pre>
-
-      <p>
-        And now you are all set to use this model to predict if your pet is a
-        cat or dog.
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          # Retrieve a batch of images from the test set image_batch,
-          label_batch = test_dataset.as_numpy_iterator().next() predictions =
-          model.predict_on_batch(image_batch).flatten() # Apply a sigmoid since
-          our model returns logits predictions = tf.nn.sigmoid(predictions)
-          predictions = tf.where(predictions &lt; 0.5, 0, 1)
-          print(&#39;Predictions:\n&#39;, predictions.numpy())
-          print(&#39;Labels:\n&#39;, label_batch) plt.figure(figsize=(10, 10))
-          for i in range(9): ax = plt.subplot(3, 3, i + 1)
-          plt.imshow(image_batch[i].astype(&#34;uint8&#34;))
-          plt.title(className_names[predictions[i]]) plt.axis(&#34;off&#34;)
-        </code>
-      </pre>
-      <pre className="tfo-notebook-code-cell-output" translate="no" dir="ltr">
-        Predictions&colon; [0 1 0 1 1 1 0 1 1 0 1 0 0 0 0 1 1 0 1 0 1 1 1 1 0 1
-        0 1 0 1 1 0] Labels&colon; [0 1 0 1 1 1 0 1 1 0 1 0 0 0 0 1 1 0 1 0 1 1
-        1 1 0 1 0 1 0 1 1 0]
-      </pre>
-
-      <p>
-        <img
-          src="/static/tutorials/images/transfer_learning_files/output_RUNoQNgtfNgt_1.png"
-          alt="png"
-        />
-      </p>
-
-      <h2 id="summary" data-text="Summary">
-        Summary
-      </h2>
-
-      <ul>
-        <li>
-          <p>
-            <strong>Using a pre-trained model for feature extraction</strong>:
-            When working with a small dataset, it is a common practice to take
-            advantage of features learned by a model trained on a larger dataset
-            in the same domain. This is done by instantiating the pre-trained
-            model and adding a fully-connected classNameifier on top. The
-            pre-trained model is &quot;frozen&quot; and only the weights of the
-            classNameifier get updated during training. In this case, the
-            convolutional base extracted all the features associated with each
-            image and you just trained a classNameifier that determines the
-            image className given that set of extracted features.
-          </p>
-        </li>
-        <li>
-          <p>
-            <strong>Fine-tuning a pre-trained model</strong>: To further improve
-            performance, one might want to repurpose the top-level layers of the
-            pre-trained models to the new dataset via fine-tuning. In this case,
-            you tuned your weights such that your model learned high-level
-            features specific to the dataset. This technique is usually
-            recommended when the training dataset is large and very similar to
-            the original dataset that the pre-trained model was trained on.
-          </p>
-        </li>
-      </ul>
-
-      <p>
-        To learn more, visit the
-        <a href="https://www.tensorflow.org/guide/keras/transfer_learning">
-          Transfer learning guide
-        </a>
-        .
-      </p>
-      <pre className="prettyprint lang-python" translate="no" dir="ltr">
-        <code translate="no" dir="ltr">
-          # MIT License # # Copyright (c) 2017 François Chollet #
-          IGNORE_COPYRIGHT: cleared by OSS licensing # # Permission is hereby
-          granted, free of charge, to any person obtaining a # copy of this
-          software and associated documentation files (the &#34;Software&#34;),
-          # to deal in the Software without restriction, including without
-          limitation # the rights to use, copy, modify, merge, publish,
-          distribute, sublicense, # and/or sell copies of the Software, and to
-          permit persons to whom the # Software is furnished to do so, subject
-          to the following conditions: # # The above copyright notice and this
-          permission notice shall be included in # all copies or substantial
-          portions of the Software. # # THE SOFTWARE IS PROVIDED &#34;AS
-          IS&#34;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR # IMPLIED, INCLUDING
-          BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, # FITNESS FOR A
-          PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL # THE
-          AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-          # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
-          ARISING # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
-          OR OTHER # DEALINGS IN THE SOFTWARE.
-        </code>
-      </pre>
     </div>
   );
 }
