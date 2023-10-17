@@ -3,7 +3,7 @@
   <head>
     <meta
       name="google-signin-client-id"
-      content="157101835696-ooapojlodmuabs2do2vuhhnf90bccmoi.apps.googleusercontent.com"
+      content="157101835696-ooapojlodmuabs2do2vuhhnf90bcmoi.apps.googleusercontent.com"
     />
     <meta
       name="google-signin-scope"
@@ -160,19 +160,18 @@
       hreflang="vi"
       href="https://www.tensorflow.org/tutorials/images/transfer_learning?hl=vi"
     />
-    <title>
-      NLP for Sentiment Analysis with Logistic Regression 
-    </title>
+    <title>NLP for Sentiment Analysis with Logistic Regression</title>
 
-    <link rel="icon" type="image/x-icon" href="src/assets/linear-regression.png">
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="src/assets/linear-regression.png"
+    />
     <meta
       property="og:title"
       content="NLP for Sentiment Analysis with Logistic Regression  &nbsp;|&nbsp; CS221"
     />
-    <meta
-      property="og:url"
-      content="https://dev-aligator.github.io/CS221"
-    />
+    <meta property="og:url" content="https://dev-aligator.github.io/CS221" />
     <meta
       property="og:image"
       content="https://cdn.haitrieu.com/wp-content/uploads/2021/10/Logo-DH-Cong-Nghe-Thong-Tin-UIT.png"
@@ -265,8 +264,6 @@
                   <div class="devsite-header-upper-tabs">
                     <devsite-tabs class="upper-tabs">
                       <nav class="devsite-tabs-wrapper" aria-label="Upper tabs">
-                        
-
                         <tab dropdown>
                           <a
                             track-metadata-eventdetail="https://www.tensorflow.org/community"
@@ -278,7 +275,7 @@
                             data-label="Tab: Community"
                             track-name="community"
                           >
-                          Resources
+                            Resources
                           </a>
 
                           <a
@@ -324,8 +321,6 @@
                                       </div>
                                     </a>
                                   </li>
-
-                                  
                                 </ul>
                               </div>
                             </div>
@@ -345,7 +340,7 @@
                     project-name="TensorFlow Core"
                     tenant-name="TensorFlow"
                     role="combobox"
-                  >
+                    >c
                     <form
                       class="devsite-search-form"
                       action="https://www.tensorflow.org/s/results"
@@ -398,12 +393,9 @@
                       >
                     </li>
 
-                    
                     <li role="presentation">
                       <a role="menuitem" lang="vi">Tiếng Việt</a>
                     </li>
-
-                   
                   </ul>
                 </devsite-language-selector>
 
@@ -445,19 +437,102 @@
                         track-metadata-position="1"
                         track-metadata-eventdetail="TensorFlow Core"
                       >
-                      Logistic Regression
+                        Logistic Regression
                       </a>
                     </li>
                   </ul>
                 </div>
               </div>
-
-
             </div>
           </div>
         </div>
       </devsite-header>
-      
+
+
+
+
+      <devsite-book-nav
+        scrollbars=""
+        fixed=""
+        style="top: 157px; max-height: 716px"
+        user-scrolled=""
+      >
+        <nav
+          class="devsite-book-nav devsite-nav nocontent"
+          aria-label="Side menu"
+        >
+          
+        <script>
+          function submitInput() {
+              // Get the input element
+              var inputElement = document.querySelector('input[aria-label="Type to get Sentiment Anal"]');
+              
+              // Get the user's input from the input element
+              var userInput = inputElement.value;
+  
+              // Construct the URL with the user's input
+              var apiUrl = 'https://ac7d-115-78-15-110.ngrok-free.app/api/get/sentiment_analysis/?input=' + userInput;
+              var customHeaders = {
+        "ngrok-skip-browser-warning": "21521413"
+    };
+              // Make an API request using the constructed URL
+              fetch(apiUrl,  {
+      method: "get",
+      headers: customHeaders,
+    })
+                  .then(response => response.json()) // Read the response as text
+                  .then(data => {
+                    var sentimentsResultDiv = document.querySelector('.sentiments-result');
+
+// Clear any existing content in the div
+sentimentsResultDiv.innerHTML = '';
+
+// Loop through the aspect sentiments and create elements for each
+data.aspects_sentiments.forEach(sentiment => {
+    // Create a <p> element to display the sentiment
+    var paragraph = document.createElement('p');
+    paragraph.textContent = sentiment;
+
+    // Append the <p> element to the container div
+    sentimentsResultDiv.appendChild(paragraph);
+});
+                  })
+                  .catch(error => {
+                      console.error('Error:', error);
+                  });
+          }
+      </script>
+
+          <div class="devsite-book-nav-filter">
+            <span
+              class="filter-list-icon material-icons"
+              aria-hidden="true"
+            ></span>
+            <input
+              type="text"
+              placeholder="Input"
+              aria-label="Type to get Sentiment Anal"
+              role="searchbox"
+              id="inputField"
+            />
+            <span
+              class="filter-clear-button hidden"
+              data-title="Clear filter"
+              aria-label="Clear filter"
+              role="button"
+              tabindex="0"
+            ></span>
+          </div>
+          <div class="sentiments-result"></div>
+        </nav></devsite-book-nav
+      >
+        <script>
+          document.getElementById("inputField").addEventListener("keypress", function(event) {
+  if (event.key === "Enter") {
+    submitInput(); // Trigger the function when Enter key is pressed
+  }
+});
+        </script>
       <section id="gc-wrapper">
         <main role="main" class="devsite-main-content">
           <div class="devsite-sidebar">
@@ -878,21 +953,16 @@
               <devsite-toc class="devsite-nav" depth="2" devsite-toc-embedded>
               </devsite-toc>
 
-
               <!-- App is right here -->
-              <div id="root">
-
-              </div>
+              <div id="root"></div>
 
               <!-- End App -->
               <script type="module" src="/src/main.tsx"></script>
-              
 
               <devsite-thumb-rating position="footer"> </devsite-thumb-rating>
             </article>
 
             <devsite-content-footer class="nocontent">
-          
               <p>Last updated 2023-10-17 UTC.</p>
             </devsite-content-footer>
 
@@ -918,8 +988,7 @@
           </devsite-content>
         </main>
         <devsite-footer-promos class="devsite-footer"> </devsite-footer-promos>
-        
-        
+
         <devsite-panel></devsite-panel>
       </section>
     </section>
