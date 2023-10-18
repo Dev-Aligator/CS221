@@ -85,54 +85,55 @@ const VietnameseArticle = () => {
       </table>
 
       <p>
-        I love Vietnam In this tutorial, you will learn how to perform aspect
-        category sentiment analysis on{" "}
+        Trong chương này, chúng ta sẽ tìm hiểu cách thực hiện aspect category
+        sentiment analysis trên{" "}
         <a
           href="https://drive.google.com/file/d/1yjZ0sDD2kAKOZK78MFqWJyaDcCSxnIqN/view?usp=drive_link"
           target="_blank"
         >
           Vietnamese restaurant reviews datasets
         </a>{" "}
-        using Logistic Regression with Gradient Descent.
+        sử dụng Logistic Regression với Gradient Descent.
       </p>
 
       <p>
-        Aspect category sentiment analysis is the process of classifying text
-        data, such as customer reviews or social media comments, into specific
-        aspect categories (e.g., "FOOD#QUALITY," "SERVICE#GENERAL") and
-        determining the sentiment associated with each aspect (e.g., positive,
-        negative, neutral).
+        Aspect category sentiment analysis là quy trình phân loại dữ liệu dạng
+        text , dữ liệu này có thể đến từ reviews của khách hàng hoặc các bình
+        luận trên mạng xã hội, thành các aspect categories cụ thể (e.g.,
+        "FOOD#QUALITY," "SERVICE#GENERAL") và gán các sentiment tương ứng cho
+        các aspects đó (e.g., positive, negative, neutral).
       </p>
 
       <p>
-        Instead of employing separate models for each entity, we will implement
-        <strong> a single model</strong> capable of classifying sentiments
-        across all aspect categories efficiently."
+        Thay vì phải lập trình từng model riêng rẽ cho mỗi entity, chúng ta sẽ
+        chỉ thiết kế
+        <strong> một model duy nhất</strong> có khả năng phân loại sentiments
+        cho các aspect categories một cách hiệu quả.
       </p>
 
       <p>
-        In this notebook, Our goal is to build a robust sentiment analysis model
-        for Vietnamese text data. We will walk through the following key steps:
+        Mục tiêu của chúng ta là xây dựng một sentiment analysis model đủ mạnh
+        để xử lý dữ liệu text Tiếng Việt. Ta sẽ tuân theo các bước sau:
       </p>
 
       <ol>
-        <li>Examine and understand the data</li>
+        <li>Khảo sát dữ liệu</li>
         <li>
-          Feature Extraction: We use the TF (Term Frequency) vectorization
-          technique to convert the preprocessed text data into numerical
-          features suitable for machine learning.
+          Feature Extraction: Ta sẽ sử dụng phương pháp TF (Term Frequency)
+          vectorization để số hóa dữ liệu dạng text cho phù hợp với một mô hình
+          máy học
         </li>
         <li>
           Model Training
           <ul>
             <li>
-              We employ a logistic regression classifier, designed to predict
-              sentiments for different aspect categories concurrently
+              Ta sẽ thiết kế một logistic regression classifier để dự đoán
+              sentiments cho các aspects khác nhau một cách đồng thời
             </li>
             <li>
-              This model has the capability to classify text into specific
-              aspect categories and assign sentiments such as negative, neutral,
-              or positive.
+              Mô hình này sẽ có khả năng phân loại text thành các aspect cụ thể
+              và gán cho chúng các sentiments tương ứng (negative, neutral, hoặc
+              positive)
             </li>
           </ul>
         </li>
@@ -190,20 +191,22 @@ tf.get_logger().setLevel('ERROR')`,
       </h3>
 
       <p>
-        In this tutorial, you will use a dataset containing several thousand
-        reviews of restaurant in Vietnamese.{" "}
+        Trong bài này, ta sẽ dùng một dataset chứa hàng nghìn reviews các nhà
+        hàng bằng Tiếng Việt.
         <a href="https://drive.google.com/uc?export=download&id=1yjZ0sDD2kAKOZK78MFqWJyaDcCSxnIqN">
+          {" "}
           Download
         </a>{" "}
-        and extract a zip file containing the csv files, or use the original txt
-        files provided by VLSP2018 and follow{" "}
+        và giải nén file zip chứa các files csv, hoặc bạn có thể dùng files txt
+        được cung cấp bởi VLSP2018 và tham khảo bước
         <a
           href="https://github.com/Dev-Aligator/CS221/blob/master/Solution/csvConverter.py"
           target="_blank"
         >
-          this
+          {" "}
+          này
         </a>{" "}
-        to convert it to csv .
+        để convert chúng thành tệp csv.
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code
@@ -220,13 +223,14 @@ TEST_PATH = 'VLSP2018-SA-train-dev-test/csv/test.csv'`,
         Data loading
       </h3>
       <p>
-        To load and process the dataset, we first define a function to read CSV
-        files using the{" "}
+        Để load và xử lí bộ dữ liệu, ta sẽ tạo một hàm để đọc các files CSV sử
+        dụng thư viện
         <a href="https://pandas.pydata.org/docs/" target="_blank">
+          {" "}
           Pandas
-        </a>{" "}
-        library. The goal is to extract the review text and corresponding labels
-        for sentiment analysis. Here's how we do it:
+        </a>
+        . Mục tiêu là trích xuất các review text và các labels tưởng ứng để sử
+        dụng cho sentiment analysis. Ta sẽ làm như sau:
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code
@@ -247,8 +251,8 @@ TEST_PATH = 'VLSP2018-SA-train-dev-test/csv/test.csv'`,
       </pre>
 
       <p>
-        Now that we have the function to read and process data, let's apply it
-        to the training, validation, and test datasets:
+        Sau khi đã tạo hàm để đọc và xử lí data, bước tiếp theo hãy cùng ứng
+        dụng nó trên bộ training, validation, và test:
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -268,13 +272,15 @@ Xtest,  ytest  = read_csv(TEST_PATH)`,
         X.shape: (500,) y.shape: (500, 12)
       </pre>
 
-      <h3 id="data_define_constants" data-text="Define Aspects and Sentiments">
-        Define Aspects and Sentiments
+      <h3
+        id="data_define_constants"
+        data-text="Định nghĩa các Aspects và Sentiments"
+      >
+        Định nghĩa các Aspects và Sentiments
       </h3>
       <p>
-        Based on the VLSP dataset guidelines, we can determine that our analysis
-        will have 12 distinct aspects, each associated with 3 different
-        sentiments.
+        Dựa trên thông tin hướng dẫn từ VLSP, ta sẽ có tổng cộng 12 aspects, mỗi
+        aspect ứng với 3 sentiments.
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -300,8 +306,8 @@ sentiments = ['-', 'o', '+']    # Negative, Neutral, Positive`,
         ></code>
       </pre>
       <p>
-        Next, we'll define a function to convert multi-output data into binary
-        multi-label format.
+        Tiếp theo, chúng ta cần một hàm để convert dữ liệu dạng multi-output
+        sang binary multi-label.
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -332,7 +338,8 @@ sentiments = ['-', 'o', '+']    # Negative, Neutral, Positive`,
       </pre>
 
       <p>
-        Convert our data to binary multi-label format using the `mo2ml` function
+        Convert dữ liệu của chúng ta sang dạng binary multi-label sử dụng hàm
+        `mo2ml` mà ta đã tạo trước đó
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code translate="no" dir="ltr">
@@ -347,8 +354,8 @@ sentiments = ['-', 'o', '+']    # Negative, Neutral, Positive`,
       </p>
 
       <p>
-        We also need to ensure data is in the DataFrame format, converting it if
-        necessary.
+        Ta cũng cần đảm bảo dữ liệu phải luôn ở dạng DataFrame, tạo hàm để
+        convert nếu cần thiết
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -364,8 +371,8 @@ sentiments = ['-', 'o', '+']    # Negative, Neutral, Positive`,
         ></code>
       </pre>
       <p>
-        Show a bar plot showing the values for each aspects from the training
-        set:
+        Giờ hãy tạo một biểu đồ cột thể hiện giá trị trung bình của từng aspects
+        trên bộ dữ liệu huấn luyện.
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code
@@ -402,8 +409,8 @@ plt.show()`,
         Feature extraction
       </h2>
       <p>
-        In this step, we convert our text data into term frequency features
-        using CountVectorizer from scikit-learn.
+        Ở bước này, ta sẽ convert dữ liệu dạng text sang thuộc tính term
+        frequency dùng CountVectorizer từ thư viện scikit-learn.
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -418,12 +425,12 @@ plt.show()`,
         <strong>Note:</strong>
         <span>
           <strong>`ngram_range`:</strong>
-          We define the range of word combinations (unigrams, bigrams, and
-          trigrams) to capture more context in the text.
-          <strong>`min_df=2`:</strong> specifies that a term must appeart in at
-          least 2 documents to be considered as a feature.
-          <strong>`max_df=0.9`:</strong> specifies that if a term must appeart
-          in more than 90% of the documents in the dataset are excluded.
+          Ta sẽ chọn cách kết hợp các tiếng (unigrams, bigrams, and trigrams) để
+          bao quát nhiều thông tin hơn từ text.
+          <strong>`min_df=2`:</strong> một từ phải xuất hiện ở ít nhất 2
+          documents thì mới được coi là một đặc trưng.
+          <strong>`max_df=0.9`:</strong> nếu một từ xuất hiện quá nhiều ( trên
+          90% tổng các documents ) thì không xét từ đó.
         </span>
       </aside>
 
@@ -435,7 +442,7 @@ plt.show()`,
           xtest_baseCV = vectorizer.transform(Xtest) <br></br>
         </code>
       </pre>
-      <p>Let's see the result after the transformation step.</p>
+      <p>Cùng xem kết quả sau bước transformation</p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code
@@ -588,9 +595,9 @@ for index in sample_vector.indices:
         Evaluation functions
       </h3>
       <p>
-        First, we create evaluation functions to check how well our model is
-        doing. In this case, we'll make use of the 'classification_report' and
-        'f1 score'
+        Trước tiên, ta cần tạo các evaluation functions để kiểm tra model có
+        hoạt động tốt hay không. Trong bài này, ta sẽ dùng
+        'classification_report' và 'f1 score'
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -619,9 +626,9 @@ def evaluate(model, X, y, average='micro'):
       <aside className="note">
         <span>
           <strong>`The F1 score`: </strong>
-          is the harmonic mean of precision and recall. <br></br>
-          <strong>`Classification Report`:</strong> is a summary of various
-          classification metrics for a machine learning model.
+          là harmonic mean của precision và recall. <br></br>
+          <strong>`Classification Report`:</strong> tổng hợp các classification
+          metrics dùng cho một mô hình máy học.
         </span>
       </aside>
 
@@ -629,11 +636,10 @@ def evaluate(model, X, y, average='micro'):
         Set up & Training
       </h3>
       <p>
-        Import the necessary libraries, including 'SGDClassifier' for stochastic
-        gradient descent classification, `optuna` for hyperparameter
-        optimization, `TPESampler` for the Tree-structured Parzen Estimator
-        sampler, and `MultiOutputClassifier` (MOC) for multi-output
-        classification.
+        Import các libraries cần thiết, bao gồm 'SGDClassifier' cho stochastic
+        gradient descent classification, `optuna` cho hyperparameter
+        optimization, `TPESampler` cho Tree-structured Parzen Estimator sampler,
+        và `MultiOutputClassifier` (MOC) cho multi-output classification.
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -647,9 +653,9 @@ def evaluate(model, X, y, average='micro'):
       </pre>
 
       <p>
-        To simplify the challenging task of hyperparameter selection, we'll use
-        Optuna. Now, we define a callback function for Optuna that tracks and
-        saves the best model during the optimization process.
+        Để đơn giản hóa bước chọn các hyperparameter, ta sẽ sử dụng Optuna. Giờ
+        ta cần định nghĩa một hàm callback cho Optuna, hàm này sẽ kiểm soát và
+        lưu model tốt nhất trong quá trình optimization.
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -665,8 +671,8 @@ def evaluate(model, X, y, average='micro'):
       </pre>
 
       <p>
-        Next we define the objective function for Optuna. It contains the
-        hyperparameters to optimize, including `class_weight` and `alpha`.
+        Tiếp theo, tạo một objective function cho Optuna. Hàm này sẽ chứa các
+        hyperparameters cần optimize, bao gồm `class_weight` and `alpha`.
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -693,9 +699,9 @@ def evaluate(model, X, y, average='micro'):
       </aside>
 
       <p>
-        Now create an instance of the MultiOutputClassifier (MOC) and train it
-        using the SGDClassifier with the hyperparameters defined by the trial.
-        The best model is saved as a user attribute for later reference.{" "}
+        Giờ hãy cùng tạo một instance MultiOutputClassifier (MOC) và train nó
+        bằng SGDClassifier với các hyperparameters từ trial. Model tốt nhất sẽ
+        được lưu lại để sử dụng sau.
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -717,16 +723,15 @@ def evaluate(model, X, y, average='micro'):
 
       <aside className="note">
         <span>
-          The choice of loss='log_loss' indicates that the logistic loss
-          function (log loss) is used, making it equivalent to logistic
-          regression.
+          Việc lựa chọn loss='log_loss' thể hiện rằng logistic loss function
+          (log loss) đang được sử dụng.
         </span>
       </aside>
 
       <p>
-        Finally, set up the Optuna study with the specified sampler and
-        optimization direction and run the optimization process by the
-        `optimize`` method
+        Cuối cùng, set up Optuna study với sampler và optimization direction
+        được chỉ định. Khởi chạy optimization process bằng cách gọi phương thức
+        `optimize`
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -741,18 +746,18 @@ def evaluate(model, X, y, average='micro'):
 
       <aside className="note">
         <span>
-          <strong>TPESampler</strong> is one of the available samplers in
-          Optuna. It uses a Bayesian optimization strategy to explore the
-          hyperparameter search space efficiently. <br></br>
-          <strong>n_trials=50</strong> specifies that Optuna will perform 50
-          trials to optimize hyperparameters.
+          <strong>TPESampler</strong> là một trong những lựa chọn samplers của
+          Optuna. Sử dụng chiến lược optimize Bayesian để tìm các hyperparameter
+          một cách hiệu quả.
+          <br></br>
+          <strong>n_trials=50:</strong> Optuna sẽ thực hiện 50 trials để
+          optimize các hyperparameters.
         </span>
       </aside>
 
       <p>
-        We evaluate the best model on the test dataset, examine its performance
-        on training and development data, and review the selected
-        hyperparameters."
+        Hãy cùng đánh giá model tốt nhất mà ta có trên bộ test, kiểm tra hiệu
+        suất trên bộ train và dev, review các hyperparameters được sử dụng.
       </p>
 
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
@@ -831,10 +836,10 @@ test: 0.5821
         }}
       ></pre>
       <p>
-        Here, we have successfully constructed a Logistic Regression Model for
-        sentiment classification across various aspect categories. However as
-        you can see from the evaluation score - <strong>0.5821 </strong>for the
-        test set, indicates room for improvement.{" "}
+        Tới đây, ta đã thành công tạo một mô hình Logistic Regression để phân
+        loại sentiment cho các aspect categories. Tuy nhiên, thông qua
+        evaluation score - Chỉ <strong>0.5821 </strong> trên bộ test, ta có thể
+        làm tốt hơn thế không ?
       </p>
 
       <h2 id="Optimization" data-text="Optimization">
@@ -845,9 +850,9 @@ test: 0.5821
         Data processing
       </h3>
       <p>
-        Looking at the review data, we find emojis, different letter cases,
-        special characters. To prepare the data properly, we will define a Text
-        Cleaner class as below:
+        Quan sát dữ liệu các review, ta bắt gặp nhiều emojis, chữ hoa thường lẫn
+        lộn, kí tự đặc biệt. Để chuẩn hóa dữ liệu, ta sẽ tạo một lớp TextCleaner
+        như sau:
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code
@@ -878,18 +883,19 @@ def remove_emojis(text):
         ></code>
       </pre>
       <p>
-        You have the option to skip this step because its impact on model
-        performance is minimal. Alternatively, you may explore another method to
-        enhance accuracy.
+        Tuy nhiên, bạn cũng có thể bỏ qua bước này vì ảnh hưởng của nó lên hiệu
+        suất cuối cùng của model là không đáng kể, hoặc bạn có thể thử một
+        phương pháp khác hiệu quả hơn.
       </p>
 
-      <h3 id="tf_idf" data-text="Use TF-IDF instead of TF">
-        Use TF-IDF instead of TF
+      <h3 id="tf_idf" data-text="Sử dụng TF-IDF thay vì TF">
+        Sử dụng TF-IDF thay vì TF
       </h3>
       <p>
-        Switching to TF-IDF from TF improves our model by assigning more weight
-        to relevant words and reducing feature complexity, leading to more
-        accurate and versatile sentiment classification.
+        Chuyển sang TF-IDF sẽ cải thiện model của ta bằng cách gán trọng số lớn
+        cho các từ có liên quan với nhau và giảm độ phức tạp của các đặc trưng,
+        từ đó có thể phân loại các sentiment một cách chính xác và linh hoạt
+        hơn.
       </p>
       <pre className="prettyprint lang-python" translate="no" dir="ltr">
         <code translate="no" dir="ltr">
@@ -1025,8 +1031,8 @@ def remove_emojis(text):
       </pre>
 
       <p>
-        After implementing the two methods mentioned above, we obtain the final
-        result:
+        Sau khi áp dụng 2 phương pháp đã đề cập ở trên, ta có được kết quả cuối
+        cùng như sau:
       </p>
 
       <pre
@@ -1042,9 +1048,8 @@ test: 0.6224
         }}
       ></pre>
       <p>
-        This tutorial concludes here. We hope you have found it helpful. We
-        highly recommend downloading the notebook and experimenting with your
-        own optimization methods.
+        Bài tutorial kết thúc ở đây, hãy thử download notebook này và thử nghiệm
+        với các phương pháp optimization của bạn.
       </p>
     </div>
   );
