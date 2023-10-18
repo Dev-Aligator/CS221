@@ -210,7 +210,7 @@
     </script>
 
     <link rel="stylesheet" href="/extras.css" />
-    <script type="module" crossorigin src="/CS221/assets/index-c92942cd.js"></script>
+    <script type="module" crossorigin src="/CS221/assets/index-713f1492.js"></script>
   </head>
   <body
     class=""
@@ -337,15 +337,41 @@
                 <devsite-language-selector>
                   <ul role="presentation">
                     <li role="presentation">
-                      <a role="menuitem" lang="en" aria-current="true"
-                        >English</a
-                      >
+                      <a role="menuitem" href="#" data-lang="en">English</a>
                     </li>
-
+                  
                     <li role="presentation">
-                      <a role="menuitem" lang="vi">Tiếng Việt</a>
+                      <a role="menuitem" href="#" data-lang="vi">Tiếng Việt</a>
                     </li>
                   </ul>
+                  <script>// Get all anchor tags within the ul element
+                    const languageOptions = document.querySelectorAll('ul[role="presentation"] a');
+                    
+                    // Add click event listeners to the anchor tags
+                    languageOptions.forEach(option => {
+                      option.addEventListener('click', function(event) {
+                        event.preventDefault(); // Prevent the default link behavior
+                    
+                        // Get the language code from the data-lang attribute
+                        const lang = option.getAttribute('data-lang');
+                    
+                        // Update the URL with the "hl" parameter
+                        const currentUrl = window.location.href;
+                        const url = new URL(currentUrl);
+                        url.searchParams.set('hl', lang);
+                    
+                        // Redirect to the updated URL
+                        window.location.href = url.toString();
+                    
+                        // Remove aria-current from all options
+                        languageOptions.forEach(langOption => {
+                          langOption.removeAttribute('aria-current');
+                        });
+                    
+                        // Set aria-current on the selected option
+                        option.setAttribute('aria-current', 'true');
+                      });
+                    });</script>
                 </devsite-language-selector>
 
                 <a
