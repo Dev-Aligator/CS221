@@ -92,7 +92,7 @@ function App() {
         >
           Vietnamese restaurant reviews datasets
         </a>{" "}
-        using Logistic Regression with Average Gradient Descent.
+        using Logistic Regression with Gradient Descent.
       </p>
 
       <p>
@@ -117,9 +117,9 @@ function App() {
       <ol>
         <li>Examine and understand the data</li>
         <li>
-          Feature Extraction: We use the TF-IDF (Term Frequency-Inverse Document
-          Frequency) vectorization technique to convert the preprocessed text
-          data into numerical features suitable for machine learning.
+          Feature Extraction: We use the TF (Term Frequency) vectorization
+          technique to convert the preprocessed text data into numerical
+          features suitable for machine learning.
         </li>
         <li>
           Model Training
@@ -877,8 +877,8 @@ def remove_emojis(text):
         ></code>
       </pre>
       <p>
-        You have the option to skip this step because its impact on test
-        accuracy is minimal. Alternatively, you may explore another method to
+        You have the option to skip this step because its impact on model
+        performance is minimal. Alternatively, you may explore another method to
         enhance accuracy.
       </p>
 
