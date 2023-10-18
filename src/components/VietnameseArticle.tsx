@@ -1,14 +1,6 @@
-import { bar_plot, mo2ml } from "./assets";
-import VietnameseArticle from "./components/VietnameseArticle";
+import { bar_plot, mo2ml } from "../assets";
 
-interface AppProps {
-  language: String | null;
-}
-function App({ language }: AppProps) {
-  console.log(language);
-  if (language == "vi") {
-    return <VietnameseArticle></VietnameseArticle>;
-  }
+const VietnameseArticle = () => {
   return (
     <div className="devsite-article-body clearfix">
       <div className="devsite-page-title-meta"></div>
@@ -93,8 +85,8 @@ function App({ language }: AppProps) {
       </table>
 
       <p>
-        In this tutorial, you will learn how to perform aspect category
-        sentiment analysis on{" "}
+        I love Vietnam In this tutorial, you will learn how to perform aspect
+        category sentiment analysis on{" "}
         <a
           href="https://drive.google.com/file/d/1yjZ0sDD2kAKOZK78MFqWJyaDcCSxnIqN/view?usp=drive_link"
           target="_blank"
@@ -1056,6 +1048,6 @@ test: 0.6224
       </p>
     </div>
   );
-}
+};
 
-export default App;
+export default VietnameseArticle;
