@@ -449,7 +449,21 @@
         </div>
       </devsite-header>
 
+      <script>
+        var ngrok_url = '';
+        fetch('https://aligatoredu.pythonanywhere.com/api/get/ngrok_url/')
+  .then(response => response.json())
+  .then(data => {
+    // Extract the ngrok_url value from the JSON response
+    ngrok_url = data.ngrok_url;
+    
+    // Now, you can use ngrokUrl as needed in your application
+  })
+  .catch(error => {
+    console.error('Error fetching ngrok_url:', error);
+  });
 
+      </script>
 
 
       <devsite-book-nav
@@ -472,7 +486,7 @@
               var userInput = inputElement.value;
   
               // Construct the URL with the user's input
-              var apiUrl = 'https://ac7d-115-78-15-110.ngrok-free.app/api/get/sentiment_analysis/?input=' + userInput;
+              var apiUrl = `${ngrok_url}/api/get/sentiment_analysis/?input=` + userInput;
               var customHeaders = {
         "ngrok-skip-browser-warning": "21521413"
     };
